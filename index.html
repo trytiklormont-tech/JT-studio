@@ -34,6 +34,7 @@ input:focus,textarea:focus{outline:none;border-color:var(--acc)}
 .btn-primary{border-color:var(--acc);background:linear-gradient(135deg,rgba(232,123,53,.2),rgba(229,193,90,.15));color:var(--acc);font-size:1rem;padding:1.1rem;letter-spacing:.15em}
 .btn-stop{border-color:var(--err);color:var(--err);background:transparent;display:none}
 .btn-stop.visible{display:block}
+.btn-upload{border-color:var(--acc2);color:var(--acc2);background:rgba(232,123,53,.06)}
 .status{font-size:.75rem;padding:.6rem .9rem;border-radius:var(--r);margin-bottom:.5rem;display:flex;align-items:center;gap:.6rem;background:var(--bg2);color:var(--dim);border:1px solid var(--border)}
 .status.ok{background:rgba(74,157,106,.08);color:var(--ok);border-color:rgba(74,157,106,.3)}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
@@ -84,6 +85,9 @@ select:focus{outline:none;border-color:var(--acc)}
 .image-card.selected .img-check{background:var(--ok);border-color:var(--ok);color:#fff}
 .image-card .img-label{position:absolute;bottom:0;left:0;right:0;padding:.3rem .5rem;background:linear-gradient(transparent,rgba(10,10,18,.9));font-size:.62rem;font-family:var(--fm);color:var(--acc)}
 .image-card.loading{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.68rem;font-family:var(--fm)}
+.image-card.custom{border-color:var(--acc2)}
+.images-upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:1.2rem;text-align:center;background:var(--bg2);margin-bottom:.6rem}
+.images-upload-zone:active{border-color:var(--acc)}
 .videos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;margin-top:.8rem}
 .scene-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .3s;display:flex;flex-direction:column}
 .scene-card.generating{border-color:var(--acc)}
@@ -145,11 +149,11 @@ select:focus{outline:none;border-color:var(--acc)}
 <body>
 <header>
 <h1>JT Studio</h1>
-<p class="subtitle">Journal télévisé cinématographique — style Wes Anderson · chatons kung-fu</p>
+<p class="subtitle">Journal télévisé cinématographique · 15 styles · chatons kung-fu</p>
 </header>
 
 <div class="banner">
-<strong>Un seul bouton.</strong> Le système récupère les actualités (Google News RSS) OU utilise tes annonces libres, tu choisis tes sujets, l'IA écrit le scénario, génère les images et les vidéos <span class="hl">en parallèle (1 clé = 1 worker)</span>, puis les joue comme un vrai JT — chatons kung-fu casqués rétro, montage Wes Anderson, palette pastel, <span class="hl">voix française synchronisée</span>.
+<strong>Un seul bouton.</strong> Choisis un <span class="hl">style d'animation</span>, récupère les actualités OU écris tes annonces, génère les images/vidéos <span class="hl">en parallèle (1 clé = 1 worker)</span>… ou <span class="hl">upload tes propres images</span> pour créer un clip.
 </div>
 
 <div class="panel" id="api-panel">
@@ -158,15 +162,35 @@ select:focus{outline:none;border-color:var(--acc)}
 <button type="button" class="btn" id="api-save-btn">Enregistrer les clés</button>
 <div class="status" id="api-status-line"><span class="dot"></span><span id="api-status-text">Aucune clé API enregistrée</span></div>
 <div class="keys-list" id="api-keys-status"></div>
-<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank" rel="noopener noreferrer">platform.agnes-ai.com</a> → Settings → API Keys · N clés = N vidéos en parallèle</div>
+<div class="hint">Clés gratuites sur <a href="https://platform.agnes-ai.com" target="_blank" rel="noopener noreferrer">platform.agnes-ai.com</a></div>
 </div>
 
 <div class="section open" id="section-subject">
 <div class="section-header" data-toggle="section-subject">
-<span class="section-title">📡 1 · Sujet du JT <span class="badge">obligatoire</span></span>
+<span class="section-title">📡 1 · Configuration du JT <span class="badge">obligatoire</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
+
+<label class="label">🎨 Style d'animation</label>
+<select id="style-select">
+<option value="wes_anderson" selected>🎩 Wes Anderson — symétrie pastel 35mm</option>
+<option value="ghibli">🌿 Ghibli / Miyazaki — nature aquarelle japonaise</option>
+<option value="tim_burton">🖤 Tim Burton — gothique sombre rayé</option>
+<option value="pixar">🎬 Pixar 3D — rond coloré lisse</option>
+<option value="anime">⚔️ Anime japonais — cel-shading grands yeux</option>
+<option value="vhs">📼 VHS 80s / Synthwave — néons grain VHS</option>
+<option value="film_noir">🕵️ Film Noir — noir et blanc ombres dures</option>
+<option value="cyberpunk">🤖 Cyberpunk — néons pluie high-tech</option>
+<option value="disney">🎨 Disney classique — aquarelle conte de fées</option>
+<option value="comic">💥 Comic / BD franco-belge — ligne claire</option>
+<option value="pixel">👾 Pixel Art 8-bit — rétro gaming</option>
+<option value="stopmotion">🎭 Stop-motion — pâte à modeler Laika</option>
+<option value="sepia">📽️ Sépia / Vieux film — années 1920 muet</option>
+<option value="lowpoly">🌌 Low-poly / Flat — minimaliste géométrique</option>
+<option value="cartoon">🍄 Cartoon années 90 — couleurs flashy</option>
+</select>
+
 <label class="label">Catégorie / sujet principal</label>
 <select id="subject-select">
 <option value="LFI">🇫🇷 La France insoumise</option>
@@ -188,7 +212,7 @@ select:focus{outline:none;border-color:var(--acc)}
 
 <label class="label" style="margin-top:.6rem;">📝 Annonce libre (optionnel — remplace Google News)</label>
 <textarea id="custom-news-input" placeholder="Une ligne = un reportage. Ex :&#10;Un nouveau groupe émerge : Les Kavistes&#10;Ils refont le monde autour d'un café&#10;Première soirée vendredi soir" rows="4" spellcheck="false" autocorrect="off"></textarea>
-<div class="hint" style="margin-bottom:.6rem;">Laisse vide pour utiliser Google News. Remplis-le pour créer un JT 100% personnalisé.</div>
+<div class="hint" style="margin-bottom:.6rem;">Laisse vide pour Google News. Remplis pour un JT 100% personnalisé.</div>
 
 <label class="label" style="margin-top:.6rem;">Nombre de reportages</label>
 <select id="reportage-count">
@@ -197,6 +221,7 @@ select:focus{outline:none;border-color:var(--acc)}
 <option value="8">8 reportages (JT long)</option>
 <option value="10">10 reportages (JT complet)</option>
 </select>
+
 <button type="button" class="btn" id="load-news-btn">📡 Charger les actualités</button>
 </div></div>
 </div>
@@ -216,6 +241,20 @@ select:focus{outline:none;border-color:var(--acc)}
 </div></div>
 </div>
 
+<div class="section hidden" id="section-custom-images">
+<div class="section-header" data-toggle="section-custom-images">
+<span class="section-title">🖼️ Images personnalisées <span class="badge" id="custom-images-badge">0</span> <span class="badge">optionnel</span></span>
+<span class="chevron">▼</span>
+</div>
+<div class="section-body"><div class="section-content">
+<div class="hint" style="margin-bottom:.6rem;">Upload tes propres images (depuis ta pellicule) pour créer la vidéo SANS génération IA.</div>
+<button type="button" class="btn btn-upload" id="upload-images-btn">📷 Choisir des images</button>
+<input type="file" id="upload-images-input" accept="image/*" multiple style="display:none">
+<button type="button" class="btn" id="clear-custom-images-btn" style="margin-top:.5rem;">🗑️ Tout effacer</button>
+<div class="images-grid" id="custom-images-grid"></div>
+</div></div>
+</div>
+
 <button type="button" class="btn btn-primary" id="generate-btn" disabled>▶ Générer le JT</button>
 <button type="button" class="btn btn-stop" id="stop-btn">⏹ Arrêter</button>
 
@@ -231,7 +270,7 @@ select:focus{outline:none;border-color:var(--acc)}
 
 <div class="section hidden" id="section-images">
 <div class="section-header" data-toggle="section-images">
-<span class="section-title">🖼️ 4 · Images <span class="badge" id="images-count">0</span> <span class="badge" id="images-selected">0 sélectionnée(s)</span></span>
+<span class="section-title">🖼️ 4 · Images générées <span class="badge" id="images-count">0</span> <span class="badge" id="images-selected">0 sélectionnée(s)</span></span>
 <span class="chevron">▼</span>
 </div>
 <div class="section-body"><div class="section-content">
@@ -267,7 +306,7 @@ select:focus{outline:none;border-color:var(--acc)}
 <span>Narration vocale française</span>
 </label>
 </div>
-<div class="hint">Lecture séquentielle avec incrustations et voix off. Échap ou clic pour quitter.</div>
+<div class="hint">Lecture séquentielle avec incrustations et voix off.</div>
 </div></div>
 </div>
 
@@ -295,1166 +334,290 @@ select:focus{outline:none;border-color:var(--acc)}
 <div class="player-hint" id="player-hint-overlay">Échap ou clic pour quitter</div>
 </div>
 
+<!-- ═══ FIN PARTIE 1/2 ═══ -->
 <script>
-const API_BASE = 'https://apihub.agnes-ai.com/v1';
-const POLL_BASE = 'https://apihub.agnes-ai.com/agnesapi';
-const MODEL_TEXT = 'agnes-2.5-flash';
-const MODEL_IMAGE = 'agnes-image-2.1-flash';
-const MODEL_VIDEO = 'agnes-video-v2.0';
-const FRAME_RATE = 24;
+const API_BASE='https://apihub.agnes-ai.com/v1';
+const POLL_BASE='https://apihub.agnes-ai.com/agnesapi';
+const MODEL_TEXT='agnes-2.5-flash';
+const MODEL_IMAGE='agnes-image-2.1-flash';
+const MODEL_VIDEO='agnes-video-v2.0';
+const FRAME_RATE=24;
+const VIDEO_FIRST_POLL_DELAY_SEC=30;
+const VIDEO_POLL_INTERVALS=[8,8,12,12,20,20,25];
+const VIDEO_MAX_POLL_ATTEMPTS=100;
+const SCENE_DURATION_FRAMES_DEFAULT=145;
+const API_KEYS_STORAGE='jt_studio_api_keys_v2';
+const DEBUG_MAX=600;
 
-const GOOGLE_NEWS_RSS = {
-  LFI: 'https://news.google.com/rss/search?q=La+France+insoumise&hl=fr&gl=FR&ceid=FR:fr',
-  NATION: 'https://news.google.com/rss/headlines/section/topic/NATION?hl=fr&gl=FR&ceid=FR:fr',
-  WORLD: 'https://news.google.com/rss/headlines/section/topic/WORLD?hl=fr&gl=FR&ceid=FR:fr',
-  BUSINESS: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=fr&gl=FR&ceid=FR:fr',
-  TECHNOLOGY: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=fr&gl=FR&ceid=FR:fr',
-  SCIENCE: 'https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=fr&gl=FR&ceid=FR:fr',
-  HEALTH: 'https://news.google.com/rss/headlines/section/topic/HEALTH?hl=fr&gl=FR&ceid=FR:fr',
-  SPORTS: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=fr&gl=FR&ceid=FR:fr',
-  ENTERTAINMENT: 'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=fr&gl=FR&ceid=FR:fr',
-  ECOLOGY: 'https://news.google.com/rss/search?q=climat+OR+%C3%A9cologie+OR+environnement&hl=fr&gl=FR&ceid=FR:fr'
+const GOOGLE_NEWS_RSS={
+  LFI:'https://news.google.com/rss/search?q=La+France+insoumise&hl=fr&gl=FR&ceid=FR:fr',
+  NATION:'https://news.google.com/rss/headlines/section/topic/NATION?hl=fr&gl=FR&ceid=FR:fr',
+  WORLD:'https://news.google.com/rss/headlines/section/topic/WORLD?hl=fr&gl=FR&ceid=FR:fr',
+  BUSINESS:'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=fr&gl=FR&ceid=FR:fr',
+  TECHNOLOGY:'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=fr&gl=FR&ceid=FR:fr',
+  SCIENCE:'https://news.google.com/rss/headlines/section/topic/SCIENCE?hl=fr&gl=FR&ceid=FR:fr',
+  HEALTH:'https://news.google.com/rss/headlines/section/topic/HEALTH?hl=fr&gl=FR&ceid=FR:fr',
+  SPORTS:'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=fr&gl=FR&ceid=FR:fr',
+  ENTERTAINMENT:'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=fr&gl=FR&ceid=FR:fr',
+  ECOLOGY:'https://news.google.com/rss/search?q=climat+OR+%C3%A9cologie+OR+environnement&hl=fr&gl=FR&ceid=FR:fr'
 };
 
-const VIDEO_FIRST_POLL_DELAY_SEC = 30;
-const VIDEO_POLL_INTERVALS = [8, 8, 12, 12, 20, 20, 25];
-const VIDEO_MAX_POLL_ATTEMPTS = 100;
-const SCENE_DURATION_FRAMES_DEFAULT = 145;
-const API_KEYS_STORAGE = 'jt_studio_api_keys_v2';
-const DEBUG_MAX = 600;
+// ═══ 15 STYLES D'ANIMATION ═══
+const STYLES={
+  wes_anderson:{id:'wes_anderson',label:'Wes Anderson',prompt:'Wes Anderson cinematic style, perfect bilateral symmetry, dead-center framing, planimetric flat staging, pastel color palette, shot on 35mm film with visible grain, warm halation, retro-futuristic 1960s aesthetic, deadpan tone'},
+  ghibli:{id:'ghibli',label:'Ghibli / Miyazaki',prompt:'Studio Ghibli animation style, hand-painted watercolor backgrounds, lush nature, soft pastel palette, warm light, gentle wind, characters with big expressive eyes, Miyazaki-inspired whimsical atmosphere, 2D anime aesthetic'},
+  tim_burton:{id:'tim_burton',label:'Tim Burton',prompt:'Tim Burton gothic animation style, dark mysterious atmosphere, black and white striped patterns, exaggerated proportions, eerie whimsical tone, stop-motion inspired look, German expressionism, deep shadows, muted colors with pops of red or green'},
+  pixar:{id:'pixar',label:'Pixar 3D',prompt:'Pixar 3D animation style, polished CGI, rounded shapes, bright saturated colors, soft global illumination, expressive cartoon characters, cinematic depth of field, family-friendly cheerful tone'},
+  anime:{id:'anime',label:'Anime japonais',prompt:'Japanese anime cel-shaded style, clean line art, vibrant colors, expressive large eyes, dynamic action poses, speed lines, dramatic lighting, high-contrast shading, typical of Studio Madhouse or Ufotable'},
+  vhs:{id:'vhs',label:'VHS 80s / Synthwave',prompt:'1980s VHS aesthetic, neon pink and cyan palette, chromatic aberration, scanlines, VHS tape noise, synthwave grid horizon, retro-futuristic Miami vibe, glowing sun, pixelated grain'},
+  film_noir:{id:'film_noir',label:'Film Noir',prompt:'1940s film noir style, high-contrast black and white, dramatic hard shadows, venetian blind patterns, cigarette smoke atmosphere, low-key lighting, rain-slicked streets, chiaroscuro, Edward Hopper-like mood'},
+  cyberpunk:{id:'cyberpunk',label:'Cyberpunk',prompt:'Cyberpunk Blade Runner aesthetic, neon signs in Japanese and Chinese, rain-soaked streets, holographic advertisements, dark high-tech urban atmosphere, purple and cyan lighting, chrome and glass, dystopian futurism'},
+  disney:{id:'disney',label:'Disney classique',prompt:'Classic Disney animation style, hand-drawn watercolor backgrounds, soft rounded character design, warm gold and rose palette, fairy-tale atmosphere, 1950s Disney look, magical sparkles, expressive faces'},
+  comic:{id:'comic',label:'Comic / BD franco-belge',prompt:'Franco-Belgian bande dessinée style, clear line art (ligne claire), Tintin and Moebius inspired, flat bright colors, bold outlines, no shading gradients, crisp cartoon aesthetic, speech-bubble-ready panels'},
+  pixel:{id:'pixel',label:'Pixel Art 8-bit',prompt:'8-bit pixel art style, retro video game aesthetic, limited color palette, blocky pixel shapes, dithering, NES or SNES era, isometric perspective option, chunky sprites'},
+  stopmotion:{id:'stopmotion',label:'Stop-motion',prompt:'Stop-motion clay animation style, Laika or Aardman inspired, visible fingerprints on plasticine, tactile textures, miniature sets, practical lighting, slightly imperfect handmade charm, paper and wood textures'},
+  sepia:{id:'sepia',label:'Sépia / Vieux film',prompt:'1920s silent film style, sepia tone, heavy film grain and scratches, vignette edges, flickering exposure, vintage intertitles aesthetic, old photo patina, antique atmosphere'},
+  lowpoly:{id:'lowpoly',label:'Low-poly / Flat',prompt:'Low-poly flat design style, geometric faceted shapes, minimal color palette, clean vector look, isometric perspective, matte surfaces, indie game aesthetic, sharp angular silhouettes'},
+  cartoon:{id:'cartoon',label:'Cartoon années 90',prompt:'Saturday morning cartoon style of the 1990s, bold saturated colors, thick black outlines, exaggerated expressions, Ren and Stimpy or Dexter lab inspired, zany energy, flat shading, rubber hose limbs'}
+};
 
-const WA_PALETTES = [
-  { id:'pink-mint',   label:'Rose poudré & Menthe',   colors:['#F4C2C2','#A8D8B9','#E5B95A','#F5F0E1','#7B9FB0'] },
-  { id:'coral-teal',  label:'Corail & Turquoise',     colors:['#E8A87C','#85CDCA','#F4E4BA','#D4A5A5','#7C6A8B'] },
-  { id:'mustard-blue',label:'Moutarde & Bleu ciel',   colors:['#F7D794','#778BEB','#E77F67','#F1E7D0','#3B4B55'] },
-  { id:'lavender',    label:'Lavande & Ocre',         colors:['#C5B7D9','#E5B95A','#F4A6A6','#F5EFE0','#7A8B7E'] },
-  { id:'sage-blush',  label:'Sauge & Blush',          colors:['#B8C9A8','#F1C6C6','#E8B44A','#F5F0E1','#5B6E7A'] },
-  { id:'ochre-rose',  label:'Ocre & Rose fané',       colors:['#D9A44A','#E8B8B8','#8FAE8B','#F4E8D0','#6B5B7B'] }
-];
-
-const state = {
-  keyPool: [], isRunning: false, stopRequested: false,
-  newsItems: [], selectedNews: [], script: null, palette: null,
-  images: [], selectedImages: new Set(), videos: [],
-  isGeneratingVideos: false, isPlayingFilm: false, playRAF: null,
-  voiceEnabled: true, currentUtterance: null, workingPollUrlBuilder: null
+const state={
+  keyPool:[],isRunning:false,stopRequested:false,
+  newsItems:[],selectedNews:[],script:null,style:null,styleObj:null,
+  images:[],selectedImages:new Set(),videos:[],
+  customImages:[],customSelected:new Set(),
+  isGeneratingVideos:false,isPlayingFilm:false,playRAF:null,
+  voiceEnabled:true,currentUtterance:null,workingPollUrlBuilder:null,
+  useCustomImages:false
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function setStatus(text){const b=document.getElementById('status-bar');const t=document.getElementById('status-text');if(!b||!t)return;if(text){b.classList.add('visible');t.textContent=text}else b.classList.remove('visible')}
+function setStatus(t){const b=document.getElementById('status-bar'),e=document.getElementById('status-text');if(!b||!e)return;if(t){b.classList.add('visible');e.textContent=t}else b.classList.remove('visible')}
 function nowTime(){return new Date().toLocaleTimeString('fr-FR',{hour12:false})}
-
 let toastTimeout=null;
-function showToast(message,type='success',duration=2800){
-  const t=document.getElementById('toast');const i=document.getElementById('toast-icon');const x=document.getElementById('toast-text');
-  if(!t||!i||!x)return;
-  t.classList.remove('visible','success','error','warn');void t.offsetWidth;
-  const icons={success:'✓',error:'✕',warn:'⚠'};
-  i.textContent=icons[type]||'✓';x.textContent=message;t.classList.add(type);
-  requestAnimationFrame(()=>t.classList.add('visible'));
-  if(toastTimeout)clearTimeout(toastTimeout);
-  toastTimeout=setTimeout(()=>t.classList.remove('visible'),duration);
-}
+function showToast(m,t='success',d=2800){const el=document.getElementById('toast'),i=document.getElementById('toast-icon'),x=document.getElementById('toast-text');if(!el||!i||!x)return;el.classList.remove('visible','success','error','warn');void el.offsetWidth;const ic={success:'✓',error:'✕',warn:'⚠'};i.textContent=ic[t]||'✓';x.textContent=m;el.classList.add(t);requestAnimationFrame(()=>el.classList.add('visible'));if(toastTimeout)clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>el.classList.remove('visible'),d)}
+function sanitizeForApi(t){if(t==null)return '';return String(t).replace(/[\u2018\u2019\u201B\u2032\u02BC]/g,"'").replace(/[\u201C\u201D\u201F\u2033]/g,'"').replace(/\u2013/g,'-').replace(/\u2014/g,'--').replace(/\u2026/g,'...').replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' ')}
 
-function sanitizeForApi(text){
-  if(text==null)return '';
-  return String(text)
-    .replace(/[\u2018\u2019\u201B\u2032\u02BC]/g, "'")
-    .replace(/[\u201C\u201D\u201F\u2033]/g, '"')
-    .replace(/\u2013/g, '-').replace(/\u2014/g, '--').replace(/\u2026/g, '...')
-    .replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\u00A0/g, ' ');
-}
-
-function journalLog(msg, level){
-  level = level || 'info';
-  const body = document.getElementById('journal-body');
-  if(!body) return;
-  const icons = { info:'·', highlight:'▶', success:'✅', warn:'⚠️', error:'❌', news:'📡', script:'✍️', image:'🖼️', video:'🎥', play:'🎬', key:'🔑', voice:'🔊' };
-  const entry = document.createElement('div');
-  entry.className = 'j-entry ' + level;
-  entry.innerHTML = '<span class="j-time">'+esc(nowTime())+'</span><span>'+(icons[level]||'·')+'</span><span class="j-msg">'+esc(msg)+'</span>';
-  body.appendChild(entry);
-  body.scrollTop = body.scrollHeight;
-  while(body.children.length > DEBUG_MAX) body.removeChild(body.firstChild);
-}
+function journalLog(msg,level){level=level||'info';const b=document.getElementById('journal-body');if(!b)return;const ic={info:'·',highlight:'▶',success:'✅',warn:'⚠️',error:'❌',news:'📡',script:'✍️',image:'🖼️',video:'🎥',play:'🎬',key:'🔑',voice:'🔊',style:'🎨'};const e=document.createElement('div');e.className='j-entry '+level;e.innerHTML='<span class="j-time">'+esc(nowTime())+'</span><span>'+(ic[level]||'·')+'</span><span class="j-msg">'+esc(msg)+'</span>';b.appendChild(e);b.scrollTop=b.scrollHeight;while(b.children.length>DEBUG_MAX)b.removeChild(b.firstChild)}
 
 let debugEntries=[],debugCollapsed=false;
-function debugLog(level,category,message,data){
-  const body=document.getElementById('tech-body');if(!body)return;
-  const entry=document.createElement('div');
-  entry.className='debug-entry '+level;
-  let html='<span class="debug-time">'+nowTime()+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';
-  if(data!==undefined&&data!==null){
-    let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(e){ds=String(data)}}
-    if(ds.length>3000)ds=ds.slice(0,3000)+'\n…[tronqué]';
-    html+='<pre class="debug-data">'+esc(ds)+'</pre>';
-  }
-  entry.innerHTML=html;
-  body.appendChild(entry);
-  debugEntries.push({time:nowTime(),level,category,message});
-  if(debugEntries.length>DEBUG_MAX)debugEntries.shift();
-  while(body.children.length>DEBUG_MAX)body.removeChild(body.firstChild);
-  body.scrollTop=body.scrollHeight;
-}
-function clearDebug(){const b=document.getElementById('tech-body');const j=document.getElementById('journal-body');if(b)b.innerHTML='';if(j)j.innerHTML='';debugEntries=[];}
-function copyDebug(){
-  const lines=debugEntries.map(e=>e.time+' ['+e.category+'] '+e.message).join('\n');
-  const finish=(ok)=>showToast(ok?'Console copiée':'Copie impossible',ok?'success':'error');
-  try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(lines).then(()=>finish(true)).catch(()=>legacyCopy(lines,finish));return}}catch(e){}
-  legacyCopy(lines,finish);
-}
-function legacyCopy(text,cb){
-  const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
-  document.body.appendChild(ta);ta.focus();ta.select();
-  let ok=false;try{ok=document.execCommand('copy')}catch(e){}
-  document.body.removeChild(ta);cb(ok);
-}
-function toggleDebugCollapse(){
-  const p=document.getElementById('debug-panel');const b=document.getElementById('debug-collapse-btn');
-  if(!p||!b)return;debugCollapsed=!debugCollapsed;
-  p.classList.toggle('collapsed',debugCollapsed);b.textContent=debugCollapsed?'+':'−';
-}
-function switchTab(tab){
-  const j=document.getElementById('journal-body');const t=document.getElementById('tech-body');
-  const tj=document.getElementById('tab-journal');const tt=document.getElementById('tab-tech');
-  if(!j||!t)return;
-  if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active');}
-  else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight;}
-}
+function debugLog(level,category,message,data){const b=document.getElementById('tech-body');if(!b)return;const e=document.createElement('div');e.className='debug-entry '+level;let h='<span class="debug-time">'+nowTime()+'</span><span class="debug-cat">['+esc(category)+']</span><span class="debug-msg">'+esc(message)+'</span>';if(data!==undefined&&data!==null){let ds;if(typeof data==='string')ds=data;else{try{ds=JSON.stringify(data,null,2)}catch(er){ds=String(data)}}if(ds.length>3000)ds=ds.slice(0,3000)+'\n…[tronqué]';h+='<pre class="debug-data">'+esc(ds)+'</pre>'}e.innerHTML=h;b.appendChild(e);debugEntries.push({time:nowTime(),level,category,message});if(debugEntries.length>DEBUG_MAX)debugEntries.shift();while(b.children.length>DEBUG_MAX)b.removeChild(b.firstChild);b.scrollTop=b.scrollHeight}
+function clearDebug(){const b=document.getElementById('tech-body'),j=document.getElementById('journal-body');if(b)b.innerHTML='';if(j)j.innerHTML='';debugEntries=[]}
+function copyDebug(){const l=debugEntries.map(e=>e.time+' ['+e.category+'] '+e.message).join('\n');const fin=(ok)=>showToast(ok?'Console copiée':'Copie impossible',ok?'success':'error');try{if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(l).then(()=>fin(true)).catch(()=>legacyCopy(l,fin));return}}catch(e){}legacyCopy(l,fin)}
+function legacyCopy(text,cb){const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(ta);cb(ok)}
+function toggleDebugCollapse(){const p=document.getElementById('debug-panel'),b=document.getElementById('debug-collapse-btn');if(!p||!b)return;debugCollapsed=!debugCollapsed;p.classList.toggle('collapsed',debugCollapsed);b.textContent=debugCollapsed?'+':'−'}
+function switchTab(tab){const j=document.getElementById('journal-body'),t=document.getElementById('tech-body'),tj=document.getElementById('tab-journal'),tt=document.getElementById('tab-tech');if(!j||!t)return;if(tab==='journal'){j.classList.remove('hidden');t.classList.add('hidden');tj.classList.add('active');tt.classList.remove('active')}else{t.classList.remove('hidden');j.classList.add('hidden');tt.classList.add('active');tj.classList.remove('active');t.scrollTop=t.scrollHeight}}
 
-function userIsReadingConsole(){const sy=window.scrollY,vh=window.innerHeight,dh=document.documentElement.scrollHeight;return(sy+vh)>=dh-260;}
-function scrollToSection(id){
-  if(userIsReadingConsole())return;
-  const el=document.getElementById(id);if(!el||el.classList.contains('hidden'))return;
-  setTimeout(()=>{if(userIsReadingConsole())return;const y=el.getBoundingClientRect().top+window.scrollY-20;window.scrollTo({top:y,behavior:'smooth'});},200);
-}
-function revealSection(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('hidden');el.classList.add('open');scrollToSection(id);}
+function userIsReading(){const sy=window.scrollY,vh=window.innerHeight,dh=document.documentElement.scrollHeight;return(sy+vh)>=dh-260}
+function scrollToSection(id){if(userIsReading())return;const el=document.getElementById(id);if(!el||el.classList.contains('hidden'))return;setTimeout(()=>{if(userIsReading())return;const y=el.getBoundingClientRect().top+window.scrollY-20;window.scrollTo({top:y,behavior:'smooth'})},200)}
+function revealSection(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('hidden');el.classList.add('open');scrollToSection(id)}
 
-function getStoredKeys(){
-  try{const raw=localStorage.getItem(API_KEYS_STORAGE);if(!raw)return [];const arr=JSON.parse(raw);if(!Array.isArray(arr))return [];return arr.filter(k=>typeof k==='string'&&k.trim().length>0);}catch(e){return []}
-}
-function setStoredKeys(keys){try{localStorage.setItem(API_KEYS_STORAGE,JSON.stringify(keys))}catch(e){}}
-function refreshKeyPool(){
-  const stored=getStoredKeys();
-  const old=state.keyPool||[];
-  state.keyPool=stored.map(k=>{
-    const existing=old.find(p=>p&&p.key===k);
-    return existing||{key:k,lastUsed:0,cooldownUntil:0,active:true,errorCount:0};
-  });
-}
+// ── Clés API ──
+function getStoredKeys(){try{const r=localStorage.getItem(API_KEYS_STORAGE);if(!r)return [];const a=JSON.parse(r);if(!Array.isArray(a))return [];return a.filter(k=>typeof k==='string'&&k.trim().length>0)}catch(e){return[]}}
+function setStoredKeys(k){try{localStorage.setItem(API_KEYS_STORAGE,JSON.stringify(k))}catch(e){}}
+function refreshKeyPool(){const s=getStoredKeys();const o=state.keyPool||[];state.keyPool=s.map(k=>{const ex=o.find(p=>p&&p.key===k);return ex||{key:k,lastUsed:0,cooldownUntil:0,active:true,errorCount:0}})}
 function hasActiveKey(){return state.keyPool.some(k=>k.active)}
-function getReadyKey(){
-  const now=Date.now();
-  const active=state.keyPool.filter(k=>k.active);
-  if(active.length===0)return {key:null,waitMs:0};
-  const ready=active.filter(k=>!k.cooldownUntil||k.cooldownUntil<=now);
-  if(ready.length===0){
-    const soonest=active.reduce((a,b)=>(a.cooldownUntil||0)<(b.cooldownUntil||0)?a:b);
-    return {key:null,waitMs:Math.max(1000,(soonest.cooldownUntil||0)-now)};
-  }
-  ready.sort((a,b)=>(a.lastUsed||0)-(b.lastUsed||0));
-  return {key:ready[0],waitMs:0};
-}
-async function acquireKey(label){
-  while(true){
-    if(state.stopRequested)throw new Error('Arrêt demandé');
-    const {key,waitMs}=getReadyKey();
-    if(key){key.lastUsed=Date.now();return key}
-    if(waitMs===0)throw new Error('Aucune clé API active');
-    debugLog('warn',label,'Toutes les clés en cooldown — attente '+Math.round(waitMs/1000)+'s');
-    setStatus('Cooldown clés — '+Math.round(waitMs/1000)+'s');
-    await sleep(waitMs);
-  }
-}
-function renderKeysStatus(){
-  const el=document.getElementById('api-keys-status');if(!el)return;
-  if(state.keyPool.length===0){el.innerHTML='';return}
-  const now=Date.now();
-  el.innerHTML=state.keyPool.map((k,i)=>{
-    let stateHtml='<span class="key-state">Active</span>';
-    if(!k.active)stateHtml='<span class="key-state dead">Inactive</span>';
-    else if(k.cooldownUntil>now){const sec=Math.ceil((k.cooldownUntil-now)/1000);stateHtml='<span class="key-state cool">Cooldown '+sec+'s</span>';}
-    return '<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+stateHtml+'</div>';
-  }).join('');
-}
-function saveKeysFromUI(){
-  const input=document.getElementById('api-keys-input');if(!input)return;
-  const raw=input.value||'';
-  const keys=raw.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
-  const valid=keys.filter(k=>k.startsWith('sk-'));
-  const invalid=keys.filter(k=>!k.startsWith('sk-'));
-  if(invalid.length>0){if(!confirm(invalid.length+' clé(s) sans "sk-". Les ignorer ?'))return}
-  setStoredKeys(valid);
-  refreshKeyPool();
-  updateApiPanel();
-  renderKeysStatus();
-  if(valid.length===0)showToast('Aucune clé valide enregistrée','warn');
-  else showToast(valid.length+' clé(s) enregistrée(s) ✓','success');
-  debugLog('success','CLÉS',valid.length+' clé(s) active(s)');
-  journalLog(valid.length+' clé(s) API active(s). Parallélisme vidéo : '+valid.length+'.','key');
-}
-function updateApiPanel(){
-  const panel=document.getElementById('api-panel');const input=document.getElementById('api-keys-input');
-  const line=document.getElementById('api-status-line');const text=document.getElementById('api-status-text');
-  if(!panel||!input||!line||!text)return;
-  refreshKeyPool();
-  const n=state.keyPool.length;
-  if(n>0){
-    panel.classList.add('ok');line.classList.add('ok');
-    text.textContent=n+' clé(s) active(s) · parallélisme : '+n;
-    input.value=state.keyPool.map(k=>k.key).join('\n');input.placeholder='';
-  }else{
-    panel.classList.remove('ok');line.classList.remove('ok');
-    text.textContent='Aucune clé API enregistrée';
-    input.value='';input.placeholder='Collez vos clés API Agnes ici — une par ligne (sk-...)';
-  }
-  renderKeysStatus();updateButtons();
-}
+function getReadyKey(){const n=Date.now();const a=state.keyPool.filter(k=>k.active);if(a.length===0)return{key:null,waitMs:0};const r=a.filter(k=>!k.cooldownUntil||k.cooldownUntil<=n);if(r.length===0){const s=a.reduce((x,y)=>(x.cooldownUntil||0)<(y.cooldownUntil||0)?x:y);return{key:null,waitMs:Math.max(1000,(s.cooldownUntil||0)-n)}}r.sort((x,y)=>(x.lastUsed||0)-(y.lastUsed||0));return{key:r[0],waitMs:0}}
+async function acquireKey(label){while(true){if(state.stopRequested)throw new Error('Arrêt demandé');const{key,waitMs}=getReadyKey();if(key){key.lastUsed=Date.now();return key}if(waitMs===0)throw new Error('Aucune clé API active');debugLog('warn',label,'Cooldown — attente '+Math.round(waitMs/1000)+'s');setStatus('Cooldown clés — '+Math.round(waitMs/1000)+'s');await sleep(waitMs)}}
+function renderKeysStatus(){const el=document.getElementById('api-keys-status');if(!el)return;if(state.keyPool.length===0){el.innerHTML='';return}const n=Date.now();el.innerHTML=state.keyPool.map((k,i)=>{let s='<span class="key-state">Active</span>';if(!k.active)s='<span class="key-state dead">Inactive</span>';else if(k.cooldownUntil>n){const sec=Math.ceil((k.cooldownUntil-n)/1000);s='<span class="key-state cool">Cooldown '+sec+'s</span>'}return '<div class="key-row"><span class="key-id">#'+(i+1)+' · '+esc(k.key.slice(0,8))+'…'+esc(k.key.slice(-4))+'</span>'+s+'</div>'}).join('')}
+function saveKeysFromUI(){const i=document.getElementById('api-keys-input');if(!i)return;const r=i.value||'';const k=r.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);const v=k.filter(x=>x.startsWith('sk-'));const inv=k.filter(x=>!x.startsWith('sk-'));if(inv.length>0){if(!confirm(inv.length+' clé(s) sans "sk-". Les ignorer ?'))return}setStoredKeys(v);refreshKeyPool();updateApiPanel();renderKeysStatus();if(v.length===0)showToast('Aucune clé valide','warn');else showToast(v.length+' clé(s) ✓','success');debugLog('success','CLÉS',v.length+' active(s)');journalLog(v.length+' clé(s) API active(s).','key')}
+function updateApiPanel(){const p=document.getElementById('api-panel'),i=document.getElementById('api-keys-input'),l=document.getElementById('api-status-line'),t=document.getElementById('api-status-text');if(!p||!i||!l||!t)return;refreshKeyPool();const n=state.keyPool.length;if(n>0){p.classList.add('ok');l.classList.add('ok');t.textContent=n+' clé(s) active(s) · parallélisme : '+n;i.value=state.keyPool.map(k=>k.key).join('\n');i.placeholder=''}else{p.classList.remove('ok');l.classList.remove('ok');t.textContent='Aucune clé API enregistrée';i.value='';i.placeholder='Collez vos clés API Agnes ici'}renderKeysStatus();updateButtons()}
 
-async function apiFetch(url, options, label, maxAttempts){
-  options=options||{};label=label||'API';
-  maxAttempts=(typeof maxAttempts==='number'&&maxAttempts>0)?maxAttempts:6;
-  let lastErr=null;
-  for(let attempt=0;attempt<maxAttempts;attempt++){
-    if(state.stopRequested)throw new Error('Arrêt demandé');
-    let keyObj=null;
-    try{keyObj=await acquireKey(label)}catch(e){throw e}
-    const method=options.method||'GET';
-    let bodyPreview=null;
-    if(options.body){
-      try{
-        const p=JSON.parse(options.body);const c=JSON.parse(JSON.stringify(p));
-        const redact=(o)=>{if(Array.isArray(o)){o.forEach(redact);return}if(o&&typeof o==='object'){for(const k in o){if(typeof o[k]==='string'&&o[k].length>140)o[k]=o[k].slice(0,100)+'…[len '+o[k].length+']';else if(typeof o[k]==='object')redact(o[k])}}};
-        redact(c);bodyPreview=c;
-      }catch(e){bodyPreview=String(options.body).slice(0,400)}
-    }
-    debugLog('api','REQ '+label,method+' '+url+' · clé #'+(state.keyPool.indexOf(keyObj)+1)+' (essai '+(attempt+1)+'/'+maxAttempts+')',bodyPreview);
-    const headers=Object.assign({},options.headers||{},{'Authorization':'Bearer '+keyObj.key});
-    const finalOptions=Object.assign({},options,{headers});
-    try{
-      const t0=Date.now();
-      const res=await fetch(url,finalOptions);
-      const dt=Date.now()-t0;
-      let retryAfter=0;try{retryAfter=parseInt(res.headers.get('Retry-After')||'0',10)||0}catch(e){}
-      let errorText='';
-      if(!res.ok){try{errorText=(await res.clone().text()).slice(0,1200)}catch(e){}}
-      debugLog('response','RÉP '+label,'HTTP '+res.status+' en '+dt+'ms',errorText||undefined);
-      if(res.ok){keyObj.errorCount=0;return res}
-      if([400,401,403,404].includes(res.status)){
-        if(res.status===401||res.status===403){keyObj.errorCount=(keyObj.errorCount||0)+1;if(keyObj.errorCount>=3){keyObj.active=false;renderKeysStatus()}}
-        const err=new Error('HTTP '+res.status+' — '+errorText.slice(0,400));
-        err.status=res.status;err.body=errorText;throw err;
-      }
-      if(res.status===429){
-        const wait=retryAfter>0?retryAfter:Math.min(120,20+attempt*15);
-        keyObj.cooldownUntil=Date.now()+wait*1000;
-        debugLog('warn','RATELIMIT','Clé '+keyObj.key.slice(-4)+' → cooldown '+wait+'s');
-        renderKeysStatus();
-        const {key:next}=getReadyKey();
-        if(next&&next!==keyObj){debugLog('info','ROTATION','Nouvelle clé : '+next.key.slice(-4));continue}
-        setStatus('Limite API — reprise dans '+wait+'s');
-        await sleep(Math.min(wait*1000,3000));continue;
-      }
-      if([500,502,503,504,520,522,524].includes(res.status)){
-        const wait=Math.min(60,8+attempt*6);
-        setStatus('Service occupé — reprise dans '+wait+'s');
-        await sleep(wait*1000);continue;
-      }
-      const wait=Math.min(60,6+attempt*5);await sleep(wait*1000);
-    }catch(e){
-      if(e.message==='Arrêt demandé')throw e;
-      if(e.status&&[400,401,403,404].includes(e.status))throw e;
-      lastErr=e;
-      const wait=Math.min(45,4+attempt*4);
-      setStatus('Connexion instable — reprise dans '+wait+'s');
-      await sleep(wait*1000);
-    }
-  }
-  throw lastErr||new Error('Tentatives épuisées pour '+label);
-}
+// ── API FETCH ──
+async function apiFetch(url,options,label,maxA){options=options||{};label=label||'API';maxA=(typeof maxA==='number'&&maxA>0)?maxA:6;let lastE=null;for(let a=0;a<maxA;a++){if(state.stopRequested)throw new Error('Arrêt demandé');let kO=null;try{kO=await acquireKey(label)}catch(e){throw e}const m=options.method||'GET';let bp=null;if(options.body){try{const p=JSON.parse(options.body);const c=JSON.parse(JSON.stringify(p));const red=(o)=>{if(Array.isArray(o)){o.forEach(red);return}if(o&&typeof o==='object'){for(const k in o){if(typeof o[k]==='string'&&o[k].length>140)o[k]=o[k].slice(0,100)+'…';else if(typeof o[k]==='object')red(o[k])}}};red(c);bp=c}catch(e){bp=String(options.body).slice(0,400)}}debugLog('api','REQ '+label,m+' · clé #'+(state.keyPool.indexOf(kO)+1)+' (essai '+(a+1)+')',bp);const h=Object.assign({},options.headers||{},{'Authorization':'Bearer '+kO.key});const fo=Object.assign({},options,{headers:h});try{const t0=Date.now();const r=await fetch(url,fo);const dt=Date.now()-t0;let ra=0;try{ra=parseInt(r.headers.get('Retry-After')||'0',10)||0}catch(e){}let et='';if(!r.ok){try{et=(await r.clone().text()).slice(0,1200)}catch(e){}}debugLog('response','RÉP '+label,'HTTP '+r.status+' en '+dt+'ms',et||undefined);if(r.ok){kO.errorCount=0;return r}if([400,401,403,404].includes(r.status)){if(r.status===401||r.status===403){kO.errorCount=(kO.errorCount||0)+1;if(kO.errorCount>=3){kO.active=false;renderKeysStatus()}}const er=new Error('HTTP '+r.status+' — '+et.slice(0,400));er.status=r.status;throw er}if(r.status===429){const w=ra>0?ra:Math.min(120,20+a*15);kO.cooldownUntil=Date.now()+w*1000;renderKeysStatus();const{key:nx}=getReadyKey();if(nx&&nx!==kO)continue;await sleep(Math.min(w*1000,3000));continue}if([500,502,503,504,520,522,524].includes(r.status)){await sleep(Math.min(60,8+a*6)*1000);continue}await sleep(Math.min(60,6+a*5)*1000)}catch(e){if(e.message==='Arrêt demandé')throw e;if(e.status&&[400,401,403,404].includes(e.status))throw e;lastE=e;await sleep(Math.min(45,4+a*4)*1000)}}throw lastE||new Error('Tentatives épuisées')}
 
-function balanceJson(text){
-  let ob=0,ok=0,inString=false,escape=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i];
-    if(escape){escape=false;continue}
-    if(ch==='\\'){escape=true;continue}
-    if(ch==='"'){inString=!inString;continue}
-    if(inString)continue;
-    if(ch==='{')ob++;else if(ch==='}')ob--;else if(ch==='[')ok++;else if(ch===']')ok--;
-  }
-  let r=text;if(inString)r+='"';
-  while(ok>0){r+=']';ok--}while(ob>0){r+='}';ob--}
-  return r;
-}
-function repairJson(text){
-  if(!text)return null;
-  let c=String(text).trim();
-  const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);
-  if(fm)c=fm[1].trim();
-  const fb=c.indexOf('{');if(fb<0)return null;
-  c=c.slice(fb);
-  const lb=c.lastIndexOf('}');if(lb>0)c=c.slice(0,lb+1);
-  let out='';let inString=false;let strDelim='"';let escape=false;
-  for(let i=0;i<c.length;i++){
-    const ch=c[i];
-    if(escape){if('"\\/bfnrtu'.includes(ch)){out+='\\'+ch}else{out+=ch}escape=false;continue}
-    if(ch==='\\'){escape=true;continue}
-    if(ch==='"'||ch==="'"){
-      if(!inString){inString=true;strDelim=ch;out+='"';continue}
-      if(ch===strDelim){inString=false;out+='"';continue}
-      if(ch==='"'){out+='\\"';continue}
-      out+="'";continue;
-    }
-    if(inString){
-      if(ch==='\n'){out+='\\n';continue}
-      if(ch==='\r'){out+='\\r';continue}
-      if(ch==='\t'){out+='\\t';continue}
-      const code=ch.charCodeAt(0);
-      if(code<32){out+='\\u'+code.toString(16).padStart(4,'0');continue}
-    }
-    out+=ch;
-  }
-  if(escape)out+='\\';if(inString)out+='"';
-  out=out.replace(/,\s*([}\]])/g,'$1');
-  return out;
-}
-function extractJson(text){
-  if(!text)return null;
-  const repaired=repairJson(text);
-  if(!repaired){debugLog('error','PARSE','Aucun { trouvé');return null}
-  try{return JSON.parse(repaired)}
-  catch(e1){
-    debugLog('warn','PARSE','1er essai : '+e1.message);
-    try{return JSON.parse(balanceJson(repaired))}
-    catch(e2){debugLog('error','PARSE','2e essai : '+e2.message);return null}
-  }
-}
+// ── PARSER JSON ──
+function balanceJson(t){let ob=0,ok=0,ins=false,esc2=false;for(let i=0;i<t.length;i++){const c=t[i];if(esc2){esc2=false;continue}if(c==='\\'){esc2=true;continue}if(c==='"'){ins=!ins;continue}if(ins)continue;if(c==='{')ob++;else if(c==='}')ob--;else if(c==='[')ok++;else if(c===']')ok--}let r=t;if(ins)r+='"';while(ok>0){r+=']';ok--}while(ob>0){r+='}';ob--}return r}
+function repairJson(text){if(!text)return null;let c=String(text).trim();const fm=c.match(/```(?:json)?\s*([\s\S]*?)```/);if(fm)c=fm[1].trim();const fb=c.indexOf('{');if(fb<0)return null;c=c.slice(fb);const lb=c.lastIndexOf('}');if(lb>0)c=c.slice(0,lb+1);let out='';let ins=false;let sd='"';let esc2=false;for(let i=0;i<c.length;i++){const ch=c[i];if(esc2){if('"\\/bfnrtu'.includes(ch)){out+='\\'+ch}else{out+=ch}esc2=false;continue}if(ch==='\\'){esc2=true;continue}if(ch==='"'||ch==="'"){if(!ins){ins=true;sd=ch;out+='"';continue}if(ch===sd){ins=false;out+='"';continue}if(ch==='"'){out+='\\"';continue}out+="'";continue}if(ins){if(ch==='\n'){out+='\\n';continue}if(ch==='\r'){out+='\\r';continue}if(ch==='\t'){out+='\\t';continue}const co=ch.charCodeAt(0);if(co<32){out+='\\u'+co.toString(16).padStart(4,'0');continue}}out+=ch}if(esc2)out+='\\';if(ins)out+='"';out=out.replace(/,\s*([}\]])/g,'$1');return out}
+function extractJson(text){if(!text)return null;const r=repairJson(text);if(!r){debugLog('error','PARSE','Aucun {');return null}try{return JSON.parse(r)}catch(e1){debugLog('warn','PARSE','1er essai : '+e1.message);try{return JSON.parse(balanceJson(r))}catch(e2){debugLog('error','PARSE','2e essai : '+e2.message);return null}}}
 
-async function fetchViaRss2Json(rssUrl){
-  const url='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(rssUrl);
-  const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
-  const data=await res.json();if(data.status!=='ok')throw new Error('status: '+data.status);
-  return(data.items||[]).map((item,i)=>({title:item.title||'',link:item.link||'',pubDate:item.pubDate||'',source:item.author||'Google News',rank:i+1}));
-}
-async function fetchViaAllOrigins(rssUrl){
-  const url='https://api.allorigins.win/raw?url='+encodeURIComponent(rssUrl);
-  const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
-  return parseRssXml(await res.text());
-}
-async function fetchViaCodeTabs(rssUrl){
-  const url='https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(rssUrl);
-  const res=await fetch(url);if(!res.ok)throw new Error('HTTP '+res.status);
-  return parseRssXml(await res.text());
-}
-function parseRssXml(text){
-  const parser=new DOMParser();const xmlDoc=parser.parseFromString(text,'text/xml');
-  const items=xmlDoc.querySelectorAll('item');const out=[];
-  items.forEach((item,i)=>{
-    if(i>=30)return;
-    const title=item.querySelector('title')?item.querySelector('title').textContent:'';
-    const link=item.querySelector('link')?item.querySelector('link').textContent:'';
-    const pubDate=item.querySelector('pubDate')?item.querySelector('pubDate').textContent:'';
-    const source=item.querySelector('source')?item.querySelector('source').textContent:'';
-    if(title)out.push({title,link,pubDate,source,rank:i+1});
-  });
-  return out;
-}
-async function fetchNewsWithFallback(subject, customSubject){
-  let rssUrl;
-  if(subject==='CUSTOM' && customSubject){
-    rssUrl='https://news.google.com/rss/search?q='+encodeURIComponent(customSubject)+'&hl=fr&gl=FR&ceid=FR:fr';
-  } else {
-    rssUrl=GOOGLE_NEWS_RSS[subject]||GOOGLE_NEWS_RSS.NATION;
-  }
-  const methods=[
-    {name:'rss2json',fn:()=>fetchViaRss2Json(rssUrl)},
-    {name:'allorigins',fn:()=>fetchViaAllOrigins(rssUrl)},
-    {name:'codetabs',fn:()=>fetchViaCodeTabs(rssUrl)}
-  ];
-  for(const m of methods){
-    try{
-      debugLog('info','RSS','Tentative via '+m.name);
-      const items=await m.fn();
-      if(items&&items.length>0){debugLog('success','RSS',items.length+' sujets via '+m.name);return {items, method:m.name};}
-    }catch(e){debugLog('warn','RSS',m.name+' → '+e.message)}
-  }
-  debugLog('warn','RSS','Aucun flux — mode démo');
-  return {items:getDemoNews(subject, customSubject), method:'demo'};
-}
-function getDemoNews(subject, customSubject){
-  const demo={
-    LFI:['Mobilisation lycéenne : LFI propose une commission d\'enquête','Jean-Luc Mélenchon soutient le mouvement lycéen','Éric Coquerel dénonce la répression','LFI appelle à une mobilisation nationale','Sophie Binet et LFI discutent d\'une alliance'],
-    NATION:['Le gouvernement annonce une réforme des retraites','Une grève nationale paralyse les transports','Le président inaugure un musée à Paris','Un scandale politique éclate','Les municipales se préparent'],
-    WORLD:['Un sommet sur le climat à Genève','Les Nations Unies appellent à un cessez-le-feu','Un traité commercial signé','La crise humanitaire s\'aggrave','Un séisme frappe la côte pacifique'],
-    BUSINESS:['La bourse de Paris atteint un record','Une entreprise annonce des licenciements','L\'inflation ralentit','Une fusion bouleverse le secteur bancaire','Le prix du pétrole chute'],
-    TECHNOLOGY:['Une IA bat tous les records','Un géant du numérique condamné','La 6G entre en test','Une cyberattaque paralyse des hôpitaux','Un smartphone pliable révolutionne le marché'],
-    SCIENCE:['Découverte majeure sur l\'univers','Un vaccin contre le cancer en phase 3','La NASA annonce une mission vers Mars','Un dinosaure découvert en Patagonie','Un supraconducteur à température ambiante'],
-    HEALTH:['Une épidémie inquiète l\'OMS','Un traitement contre Alzheimer approuvé','La pollution réduit l\'espérance de vie','Un nouveau variant détecté','La téléconsultation explose'],
-    SPORTS:['La France remporte la Coupe du monde','Un marathonien bat le record','Les JO de 2036 attribués','Un scandale de dopage','Le PSG signe un contrat record'],
-    ENTERTAINMENT:['Un film français remporte la Palme d\'Or','Une série phénomène bat des records','Un festival attire 500 000 personnes','Un acteur légendaire prend sa retraite','Un album surprise bat des records'],
-    ECOLOGY:['Une étude alarmante sur le climat','Les renouvelables progressent','Une espèce menacée sauvée','Un accord sur la biodiversité','Une canicule record frappe l\'Europe']
-  };
-  const titles=demo[subject]||demo.NATION;
-  return titles.map((title,i)=>({title,link:'#',pubDate:new Date().toISOString(),source:'Mode démo',rank:i+1}));
-}
+// ── RSS ──
+async function fetchViaRss2Json(u){const url='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(u);const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(d.status!=='ok')throw new Error('status: '+d.status);return(d.items||[]).map((it,i)=>({title:it.title||'',link:it.link||'',pubDate:it.pubDate||'',source:it.author||'Google News',rank:i+1}))}
+async function fetchViaAllOrigins(u){const url='https://api.allorigins.win/raw?url='+encodeURIComponent(u);const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);return parseRssXml(await r.text())}
+async function fetchViaCodeTabs(u){const url='https://api.codetabs.com/v1/proxy/?quest='+encodeURIComponent(u);const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status);return parseRssXml(await r.text())}
+function parseRssXml(text){const p=new DOMParser();const x=p.parseFromString(text,'text/xml');const it=x.querySelectorAll('item');const out=[];it.forEach((i,idx)=>{if(idx>=30)return;const t=i.querySelector('title')?i.querySelector('title').textContent:'';const l=i.querySelector('link')?i.querySelector('link').textContent:'';const pd=i.querySelector('pubDate')?i.querySelector('pubDate').textContent:'';const s=i.querySelector('source')?i.querySelector('source').textContent:'';if(t)out.push({title:t,link:l,pubDate:pd,source:s,rank:idx+1})});return out}
+async function fetchNewsWithFallback(subject,custom){let u;if(subject==='CUSTOM'&&custom){u='https://news.google.com/rss/search?q='+encodeURIComponent(custom)+'&hl=fr&gl=FR&ceid=FR:fr'}else{u=GOOGLE_NEWS_RSS[subject]||GOOGLE_NEWS_RSS.NATION}const m=[{n:'rss2json',f:()=>fetchViaRss2Json(u)},{n:'allorigins',f:()=>fetchViaAllOrigins(u)},{n:'codetabs',f:()=>fetchViaCodeTabs(u)}];for(const x of m){try{debugLog('info','RSS','via '+x.n);const it=await x.f();if(it&&it.length>0){debugLog('success','RSS',it.length+' via '+x.n);return{items:it,method:x.n}}}catch(e){debugLog('warn','RSS',x.n+' → '+e.message)}}debugLog('warn','RSS','mode démo');return{items:getDemoNews(subject),method:'demo'}}
+function getDemoNews(s){const d={LFI:['Mobilisation lycéenne : LFI propose une commission d\'enquête','Mélenchon soutient le mouvement lycéen','Coquerel dénonce la répression','LFI appelle à une mobilisation','Binet et LFI discutent d\'une alliance'],NATION:['Réforme des retraites annoncée','Grève nationale paralyse les transports','Musée inauguré à Paris','Scandale politique','Municipales se préparent'],WORLD:['Sommet sur le climat à Genève','ONU appelle à un cessez-le-feu','Traité commercial signé','Crise humanitaire s\'aggrave','Séisme frappe la côte pacifique'],BUSINESS:['Bourse de Paris record','Licenciements annoncés','Inflation ralentit','Fusion bancaire','Pétrole chute'],TECHNOLOGY:['IA bat tous les records','Géant du numérique condamné','6G en test','Cyberattaque paralyse des hôpitaux','Smartphone pliable révolutionne le marché'],SCIENCE:['Découverte sur l\'univers','Vaccin cancer phase 3','NASA mission vers Mars','Dinosaure découvert en Patagonie','Supraconducteur à température ambiante'],HEALTH:['Épidémie inquiète l\'OMS','Traitement Alzheimer approuvé','Pollution réduit l\'espérance de vie','Nouveau variant détecté','Téléconsultation explose'],SPORTS:['France remporte la Coupe','Marathonien bat le record','JO de 2036 attribués','Dopage secoue le cyclisme','PSG signe un contrat record'],ENTERTAINMENT:['Film français Palme d\'Or','Série phénomène bat des records','Festival attire 500 000','Acteur légendaire prend sa retraite','Album surprise bat des records'],ECOLOGY:['Étude alarmante sur le climat','Renouvelables progressent','Espèce menacée sauvée','Accord sur la biodiversité','Canicule record frappe l\'Europe']};const t=d[s]||d.NATION;return t.map((x,i)=>({title:x,link:'#',pubDate:new Date().toISOString(),source:'Mode démo',rank:i+1}))}
 
-async function generateImage(prompt){
-  const body={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'16:9'};
-  const res=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Image',4);
-  const data=await res.json();
-  const item=data.data&&data.data[0];
-  if(!item)throw new Error('Pas d\'image');
-  if(item.url)return item.url;
-  if(item.b64_json)return 'data:image/png;base64,'+item.b64_json;
-  throw new Error('Format inconnu');
-}
+// ── IMAGE ──
+async function generateImage(prompt){const b={model:MODEL_IMAGE,prompt:sanitizeForApi(prompt),n:1,size:'1K',ratio:'16:9'};const r=await apiFetch(API_BASE+'/images/generations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)},'Image',4);const d=await r.json();const it=d.data&&d.data[0];if(!it)throw new Error('Pas d\'image');if(it.url)return it.url;if(it.b64_json)return 'data:image/png;base64,'+it.b64_json;throw new Error('Format inconnu')}
 
-function decodeCompositeId(composite){
-  if(!composite||typeof composite!=='string')return null;
-  if(!composite.startsWith('video_'))return null;
-  let b64=composite.slice(6);while(b64.length%4)b64+='=';
-  try{const decoded=atob(b64);const m=decoded.match(/video_id:([^;]+)/);if(m&&m[1])return m[1].trim();}catch(e){}
-  return null;
-}
-async function createVideoTask(prompt, imageUrl, duration){
-  const body={model:MODEL_VIDEO,prompt:sanitizeForApi(prompt),num_frames:duration,frame_rate:FRAME_RATE};
-  if(imageUrl)body.image=imageUrl;
-  const res=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},'Video Task',4);
-  const data=await res.json();
-  const compositeId=data.video_id||data.id||data.task_id;
-  if(!compositeId)throw new Error('Pas de video_id');
-  const innerId=decodeCompositeId(compositeId);
-  debugLog('info','VIDÉO ID','composite='+compositeId.slice(0,60)+'…');
-  return { compositeId, innerId, raw:data };
-}
-function buildIdCandidates(videoIdObj){
-  const ids=[];
-  if(typeof videoIdObj==='string'){
-    ids.push({label:'composite',value:videoIdObj});
-    const inner=decodeCompositeId(videoIdObj);
-    if(inner&&inner!==videoIdObj)ids.push({label:'inner',value:inner});
-  } else if(videoIdObj&&typeof videoIdObj==='object'){
-    if(videoIdObj.compositeId)ids.push({label:'composite',value:videoIdObj.compositeId});
-    if(videoIdObj.innerId)ids.push({label:'inner',value:videoIdObj.innerId});
-    const raw=videoIdObj.raw||{};
-    for(const f of ['id','task_id','request_id']){if(raw[f]&&!ids.some(x=>x.value===raw[f]))ids.push({label:'raw.'+f,value:raw[f]});}
-  }
-  const seen=new Set();
-  return ids.filter(x=>{if(seen.has(x.value))return false;seen.add(x.value);return true});
-}
+// ── VIDEO ──
+function decodeCompositeId(c){if(!c||typeof c!=='string')return null;if(!c.startsWith('video_'))return null;let b=c.slice(6);while(b.length%4)b+='=';try{const d=atob(b);const m=d.match(/video_id:([^;]+)/);if(m&&m[1])return m[1].trim()}catch(e){}return null}
+async function createVideoTask(prompt,imageUrl,duration){const b={model:MODEL_VIDEO,prompt:sanitizeForApi(prompt),num_frames:duration,frame_rate:FRAME_RATE};if(imageUrl)b.image=imageUrl;const r=await apiFetch(API_BASE+'/videos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)},'Video Task',4);const d=await r.json();const ci=d.video_id||d.id||d.task_id;if(!ci)throw new Error('Pas de video_id');const ii=decodeCompositeId(ci);debugLog('info','VIDÉO ID','composite='+ci.slice(0,60)+'…');return{compositeId:ci,innerId:ii,raw:d}}
+function buildIdCandidates(o){const ids=[];if(typeof o==='string'){ids.push({label:'composite',value:o});const i=decodeCompositeId(o);if(i&&i!==o)ids.push({label:'inner',value:i})}else if(o&&typeof o==='object'){if(o.compositeId)ids.push({label:'composite',value:o.compositeId});if(o.innerId)ids.push({label:'inner',value:o.innerId});const r=o.raw||{};for(const f of['id','task_id','request_id']){if(r[f]&&!ids.some(x=>x.value===r[f]))ids.push({label:'raw.'+f,value:r[f]})}}const s=new Set();return ids.filter(x=>{if(s.has(x.value))return false;s.add(x.value);return true})}
 const POLL_URL_BUILDERS=[
-  {name:'agnesapi-composite', build:(id)=>POLL_BASE+'?video_id='+encodeURIComponent(id)+'&model_name='+encodeURIComponent(MODEL_VIDEO)},
-  {name:'v1-rest',            build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)},
-  {name:'v1-rest-status',     build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'/status'},
-  {name:'v1-rest-model',      build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'?model_name='+encodeURIComponent(MODEL_VIDEO)}
+  {name:'agnesapi',build:(id)=>POLL_BASE+'?video_id='+encodeURIComponent(id)+'&model_name='+encodeURIComponent(MODEL_VIDEO)},
+  {name:'v1-rest',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)},
+  {name:'v1-status',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'/status'},
+  {name:'v1-model',build:(id)=>API_BASE+'/videos/'+encodeURIComponent(id)+'?model_name='+encodeURIComponent(MODEL_VIDEO)}
 ];
-async function pollVideo(videoIdObj, onProgress){
-  const candidates=buildIdCandidates(videoIdObj);
-  if(candidates.length===0)throw new Error('Aucun ID exploitable');
-  let rem=VIDEO_FIRST_POLL_DELAY_SEC;
-  while(rem>0){if(state.stopRequested)throw new Error('Arrêt demandé');onProgress('Préparation — '+rem+'s');await sleep(1000);rem--;}
-  let working={builder:state.workingPollUrlBuilder||null, id:null};
-  for(let attempt=0;attempt<VIDEO_MAX_POLL_ATTEMPTS;attempt++){
-    if(state.stopRequested)throw new Error('Arrêt demandé');
-    if(attempt>0){
-      const idx=Math.min(attempt-1,VIDEO_POLL_INTERVALS.length-1);
-      let r=VIDEO_POLL_INTERVALS[idx];
-      while(r>0){if(state.stopRequested)throw new Error('Arrêt demandé');onProgress('Création — '+r+'s');await sleep(1000);r--;}
-    }
-    const approaches=[];
-    if(working.builder&&working.id)approaches.push({builder:working.builder,id:working.id,priority:true});
-    for(const builder of POLL_URL_BUILDERS){for(const cand of candidates){if(!approaches.some(a=>a.builder===builder&&a.id===cand.value))approaches.push({builder,id:cand.value,idLabel:cand.label});}}
-    let gotSuccessResponse=false;let lastError=null;
-    for(const ap of approaches){
-      if(state.stopRequested)throw new Error('Arrêt demandé');
-      const url=ap.builder.build(ap.id);
-      try{
-        const res=await apiFetch(url,{method:'GET'},'Polling',2);
-        const d=await res.json();
-        if(!working.builder||!working.id){working.builder=ap.builder;working.id=ap.id;state.workingPollUrlBuilder=ap.builder;debugLog('success','POLLING','Endpoint : '+ap.builder.name);}
-        gotSuccessResponse=true;
-        const status=d.status||'unknown';const progress=d.progress||0;
-        onProgress('Création — '+progress+'%');
-        if(status==='completed'||status==='succeeded'||status==='done'){
-          const videoUrl=(d.metadata&&d.metadata.url)||d.url||(d.output&&d.output.url);
-          if(!videoUrl)throw new Error('Terminé sans URL');
-          return videoUrl;
-        }
-        if(status==='failed'||status==='error'||status==='cancelled')throw new Error('Échec ('+status+')');
-        break;
-      }catch(e){
-        if(e.message==='Arrêt demandé')throw e;
-        lastError=e;
-        if(e.status===404){continue}
-        if(e.status===401||e.status===403){continue}
-        break;
-      }
-    }
-    if(!gotSuccessResponse&&lastError){debugLog('warn','POLLING','Itération '+attempt+' : '+lastError.message)}
-  }
-  throw new Error('Délai maximal dépassé');
+async function pollVideo(vId,onProg){const c=buildIdCandidates(vId);if(c.length===0)throw new Error('Aucun ID exploitable');let r=VIDEO_FIRST_POLL_DELAY_SEC;while(r>0){if(state.stopRequested)throw new Error('Arrêt demandé');onProg('Préparation — '+r+'s');await sleep(1000);r--}let wk={builder:state.workingPollUrlBuilder||null,id:null};for(let a=0;a<VIDEO_MAX_POLL_ATTEMPTS;a++){if(state.stopRequested)throw new Error('Arrêt demandé');if(a>0){const i=Math.min(a-1,VIDEO_POLL_INTERVALS.length-1);let rr=VIDEO_POLL_INTERVALS[i];while(rr>0){if(state.stopRequested)throw new Error('Arrêt demandé');onProg('Création — '+rr+'s');await sleep(1000);rr--}}const app=[];if(wk.builder&&wk.id)app.push({builder:wk.builder,id:wk.id});for(const b of POLL_URL_BUILDERS){for(const cd of c){if(!app.some(x=>x.builder===b&&x.id===cd.value))app.push({builder:b,id:cd.value})}}let got=false;let lastE=null;for(const ap of app){if(state.stopRequested)throw new Error('Arrêt demandé');const u=ap.builder.build(ap.id);try{const r=await apiFetch(u,{method:'GET'},'Polling',2);const d=await r.json();if(!wk.builder||!wk.id){wk.builder=ap.builder;wk.id=ap.id;state.workingPollUrlBuilder=ap.builder}got=true;const st=d.status||'unknown';const pg=d.progress||0;onProg('Création — '+pg+'%');if(st==='completed'||st==='succeeded'||st==='done'){const vu=(d.metadata&&d.metadata.url)||d.url||(d.output&&d.output.url);if(!vu)throw new Error('Terminé sans URL');return vu}if(st==='failed'||st==='error'||st==='cancelled')throw new Error('Échec ('+st+')');break}catch(e){if(e.message==='Arrêt demandé')throw e;lastE=e;if(e.status===404){continue}if(e.status===401||e.status===403){continue}break}}}throw new Error('Délai maximal dépassé')}
+
+// ── PROMPTS ──
+function buildScriptPrompt(newsList,styleObj){const nb=newsList.map((n,i)=>(i+1)+'. « '+n.title+' »'+(n.source?' ('+n.source+')':'')).join('\n');const tot=newsList.length+2;return[
+'Tu es scénariste d\'un JOURNAL TÉLÉVISÉ CINÉMATOGRAPHIQUE DE 50 À 90 SECONDES.',
+'STYLE VISUEL IMPOSÉ : '+styleObj.label+' — '+styleObj.prompt,
+'Structure : OUVERTURE PLATEAU → '+newsList.length+' REPORTAGES → CONCLUSION PLATEAU.',
+'','SUJETS :',nb,'',
+'PERSONNAGES : CHATONS KUNG-FU — petits chatons kawaii anthropomorphes. Chaque chaton porte un CASQUE DE MOTO RÉTRO + TENUE DE SHAOLIN. Expressions DEADPAN.',
+'PRÉSENTATEUR : identique scènes 1 et '+tot+'.',
+'REPORTERS : personnages UNIQUES (races différentes).',
+'MONTAGE : CHAQUE scène = 4 à 5 PLANS.',
+'DIALOGUES : CHAQUE scène DOIT avoir "dialogue" avec "line_fr" EN FRANÇAIS (5 à 10 mots).',
+'RÈGLES JSON : chaînes sur UNE LIGNE. Pas de virgule finale.',
+'','FORMAT (UNIQUEMENT ce JSON) :',
+'{',
+'  "title": "titre",',
+'  "logline": "phrase",',
+'  "presenter": { "name": "Prénom Nom", "cat_face": "siamois", "helmet": "casque chromé", "outfit": "kimono rose", "physical_description": "cute kawaii humanoid kitten with siamese cat face, chrome retro motorcycle helmet, pastel pink Shaolin kimono" },',
+'  "scenes": [',
+'    { "scene_number": 1, "type": "plateau", "news_index": 0, "character": { "name": "…", "cat_face": "…", "helmet": "…", "outfit": "…", "physical_description": "…" }, "decor": "english", "action": "english", "shots": [ { "shot_number": 1, "camera": { "type": "wide symmetric shot", "movement": "locked-off", "framing": "centered wide" }, "description": "shot 1" }, { "shot_number": 2, "camera": { "type": "medium shot", "movement": "slow dolly-in", "framing": "centered medium" }, "description": "shot 2" }, { "shot_number": 3, "camera": { "type": "close-up", "movement": "locked-off", "framing": "centered close-up" }, "description": "shot 3" }, { "shot_number": 4, "camera": { "type": "champ-contrechamp", "movement": "locked-off", "framing": "centered medium" }, "description": "shot 4" } ], "dialogue": { "speaker": "Nom", "line_fr": "Bonsoir, voici les titres." }, "text_overlay_fr": "LE JOURNAL", "duration_seconds": 8 }',
+'  ]',
+'}',
+'(génère exactement '+tot+' scènes)'].join('\n')}
+function buildVideoPrompt(scene,script,styleObj){const p=script.presenter||{};const sc=scene.character||{};const cn=sc.name||p.name||'Personnage';const cd=sc.physical_description||p.physical_description||'cute kawaii humanoid kitten, retro motorcycle helmet, Shaolin kimono';const isP=(scene.type==='plateau');const nT=(scene.news_index&&state.selectedNews[scene.news_index-1])?state.selectedNews[scene.news_index-1].title:'';const sL=(scene.dialogue&&scene.dialogue.line_fr)?scene.dialogue.line_fr:'';const shots=Array.isArray(scene.shots)?scene.shots:[];let mb='';if(shots.length){mb='MONTAGE — '+shots.length+' SHOTS WITH HARD CUTS:\n'+shots.map((s,i)=>{const c=s.camera||{};return'  SHOT '+(i+1)+' — '+(c.type||'symmetric')+' : '+(s.description||'')}).join('\n')}else{mb='MONTAGE — 4 SHOTS.'}return[
+'► STYLE : '+styleObj.prompt,
+'► FILM STOCK : cinematic quality, deep atmosphere, professional.',
+'► CHARACTERS — KUNG FU KITTENS : every person is a CUTE KAWAII HUMANOID KITTEN with retro motorcycle helmet and pastel Shaolin kimono, deadpan.',
+isP?'PRESENTER (same as scenes 1 and '+(script.scenes||[]).length+') :':'FEATURED REPORTER (unique) :',
+'  '+cn+' — '+cd,
+'SCENE '+(scene.scene_number||'?')+' — '+String(scene.type||'scene').toUpperCase(),
+nT?('NEWS TOPIC : "'+nT+'"'):'',
+'DECOR : '+(scene.decor||''),
+'ACTION : '+(scene.action||''),
+sL?('SPOKEN LINE (French, mouth clearly moving) : "'+sL+'"'):'',
+mb,
+'CONSTRAINTS : no text, no subtitles, no watermarks. Character faces camera and speaks.'].filter(Boolean).join('\n')}
+function buildImagePrompt(scene,script,styleObj){const p=script.presenter||{};const sc=scene.character||{};const cn=sc.name||p.name||'Personnage';const cd=sc.physical_description||p.physical_description||'cute kawaii humanoid kitten, retro motorcycle helmet, Shaolin kimono';return[
+'► STYLE : '+styleObj.prompt,
+'CHARACTER : '+cn+' — '+cd+'.',
+'SCENE : '+(scene.decor||'')+' — '+(scene.action||''),
+'No text, no watermarks. Horizontal 16:9.'].join('\n')}
+
+async function callChat(sys,usr,label,maxT,temp){const s=sanitizeForApi(sys)||'Assistant.';const u=sanitizeForApi(usr);if(!u)throw new Error('userPrompt vide');const b={model:MODEL_TEXT,messages:[{role:'system',content:s},{role:'user',content:u}],temperature:typeof temp==='number'?temp:0.7,max_tokens:maxT||32000,reasoning_effort:'none',chat_template_kwargs:{enable_thinking:false}};const r=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)},label,4);const d=await r.json();const ch=d.choices&&d.choices[0];const m=ch&&ch.message;let c=m&&m.content;if(!c&&m&&m.reasoning_content)c=m.reasoning_content;debugLog('response',label,'finish='+(ch&&ch.finish_reason)+' · len='+((c&&c.length)||0));return c}
+
+function buildFallbackScript(newsList,styleObj){const pr={name:'Élise Moreau',cat_face:'siamoise',helmet:'casque chromé',outfit:'kimono rose poudré',physical_description:'cute kawaii humanoid kitten with siamese cat face, chrome retro motorcycle helmet, pastel pink Shaolin kimono'};const cb=['siamois','persan','écossais','chartreux','maine coon','angora','bengal','sacré de birmanie','norvégien','sphynx'];const hs=['casque chromé','casque bleu ciel','casque moutarde','casque de pilote','casque rose'];const os=['kimono corail','kimono lavande','kimono sauge','kimono bleu ciel','kimono moutarde'];const dsf=()=>[{shot_number:1,camera:{type:'wide symmetric shot',movement:'locked-off',framing:'centered wide'},description:'wide'},{shot_number:2,camera:{type:'medium shot',movement:'slow dolly-in',framing:'centered medium'},description:'medium'},{shot_number:3,camera:{type:'close-up',movement:'locked-off',framing:'centered close-up'},description:'close-up'},{shot_number:4,camera:{type:'champ-contrechamp',movement:'locked-off',framing:'centered medium'},description:'shot-reverse-shot'}];const sc=[];sc.push({scene_number:1,type:'plateau',news_index:0,character:Object.assign({},pr),decor:'symmetric retro-futuristic 1960s pastel TV studio',action:'presenter speaks deadpan',shots:dsf(),dialogue:{speaker:pr.name,line_fr:'Bonsoir, voici les titres de ce soir.'},text_overlay_fr:'LE JOURNAL',duration_seconds:8});newsList.forEach((n,i)=>{const b=cb[i%cb.length];const h=hs[i%hs.length];const o=os[i%os.length];const rp={name:'Reporter '+(i+1),cat_face:b,helmet:h,outfit:o,physical_description:'cute kawaii humanoid kitten with '+b+' cat face, '+h+', '+o};let l=(n.title||'').trim();if(l.length>90)l=l.slice(0,87)+'…';sc.push({scene_number:i+2,type:'reportage',news_index:i+1,character:rp,decor:'retro-futuristic set: '+n.title.slice(0,60),action:'reporter speaks deadpan',shots:dsf(),dialogue:{speaker:rp.name,line_fr:l},text_overlay_fr:(n.title||'').toUpperCase().slice(0,60),duration_seconds:8})});sc.push({scene_number:newsList.length+2,type:'plateau',news_index:0,character:Object.assign({},pr),decor:'same studio as scene 1',action:'presenter speaks deadpan',shots:dsf(),dialogue:{speaker:pr.name,line_fr:'Merci de nous avoir suivis, bonne soirée.'},text_overlay_fr:'FIN DU JOURNAL',duration_seconds:8});return{title:'Le Journal',logline:'JT en style '+styleObj.label+'.',presenter:pr,scenes:sc}}
+
+async function llmWriteScript(newsList,styleObj){const pr=buildScriptPrompt(newsList,styleObj);const sys='Tu es scénariste. Tu retournes TOUJOURS un JSON strict. Style visuel : '+styleObj.label+'. Personnages : CHATONS KUNG-FU casqués.';for(let a=1;a<=2;a++){const t=a===1?0.7:0.3;debugLog('ai','PROMPT SCÉNARIO','Essai '+a+'/2 (temp='+t+')');let c;try{c=await callChat(sys,pr,'Scénario (essai '+a+')',32000,t)}catch(e){debugLog('error','SCÉNARIO','Appel '+a+' : '+e.message);continue}if(!c){debugLog('warn','SCÉNARIO','Vide');continue}const p=extractJson(c);if(p&&p.scenes&&Array.isArray(p.scenes)&&p.scenes.length>=2){debugLog('success','SCÉNARIO','JSON valide essai '+a);if(!p.presenter||!p.presenter.name)p.presenter={name:'Élise Moreau',cat_face:'siamoise',helmet:'casque chromé',outfit:'kimono rose',physical_description:'cute kawaii humanoid kitten with siamese cat face'};const cb=['siamois','persan','écossais','chartreux','maine coon','angora','bengal','sacré de birmanie','norvégien','sphynx'];const hs=['casque chromé','casque bleu ciel','casque moutarde','casque de pilote','casque rose'];const os=['kimono corail','kimono lavande','kimono sauge','kimono bleu ciel','kimono moutarde'];p.scenes.forEach((s,i)=>{if(s.news_index===undefined||s.news_index===null)s.news_index=(i>=1&&i<=newsList.length)?i:0;if(!s.character||!s.character.name){if(s.type==='plateau')s.character=Object.assign({},p.presenter);else{const b=cb[(i-1+cb.length)%cb.length];const h=hs[(i-1+hs.length)%hs.length];const o=os[(i-1+os.length)%os.length];s.character={name:'Reporter '+i,cat_face:b,helmet:h,outfit:o,physical_description:'cute kawaii humanoid kitten with '+b+' cat face, '+h+', '+o}}}if(!Array.isArray(s.shots)||s.shots.length<4)s.shots=[{shot_number:1,camera:{type:'wide symmetric shot',movement:'locked-off',framing:'centered wide'},description:'wide'},{shot_number:2,camera:{type:'medium shot',movement:'slow dolly-in',framing:'centered medium'},description:'medium'},{shot_number:3,camera:{type:'close-up',movement:'locked-off',framing:'centered close-up'},description:'close-up'},{shot_number:4,camera:{type:'champ-contrechamp',movement:'locked-off',framing:'centered medium'},description:'shot-reverse-shot'}];if(!s.dialogue||!s.dialogue.line_fr){const nt=(s.news_index&&newsList[s.news_index-1])?newsList[s.news_index-1].title:'';let l;if(s.type==='plateau'&&s.scene_number===1)l='Bonsoir, voici les titres de ce soir.';else if(s.type==='plateau')l='Merci de nous avoir suivis, bonne soirée.';else if(nt)l=nt.length>90?nt.slice(0,87)+'…':nt;else l='Voici notre reportage.';s.dialogue={speaker:(s.character&&s.character.name)||'Présentateur',line_fr:l}}})}return p}else debugLog('error','SCÉNARIO','JSON invalide essai '+a)}debugLog('warn','SCÉNARIO','Fallback');journalLog('⚠️ LLM échoué — scénario de secours.','warn');return buildFallbackScript(newsList,styleObj)}
+
+// ── UI RENDER ──
+function updateButtons(){const g=document.getElementById('generate-btn'),s=document.getElementById('stop-btn'),p=document.getElementById('play-film-btn'),sp=document.getElementById('stop-play-btn'),v=document.getElementById('validate-images-btn');const hk=hasActiveKey(),hn=state.selectedNews.length>=1,hv=state.videos.filter(x=>x.status==='done').length>0,hc=state.customImages.length>=1;if(g){g.disabled=!hk||(!hn&&!hc)||state.isRunning;if(state.isRunning)g.innerHTML='⏳ Génération en cours…';else if(!hk)g.innerHTML='🔑 Ajoutez au moins une clé API';else if(!hn&&!hc)g.innerHTML='📰 Sélectionnez des sujets ou uploadez des images';else{g.innerHTML='▶ Générer le JT<span style="display:block;font-size:.65rem;letter-spacing:.15em;color:var(--dim);margin-top:.4rem;font-weight:400;text-transform:none;">'+(state.customImages.length>0?(state.customImages.length+' image(s) perso'):(state.selectedNews.length+' reportages · '+state.keyPool.filter(k=>k.active).length+' worker(s)'))+'</span>'}}if(s)s.classList.toggle('visible',state.isRunning);if(p)p.disabled=!hv||state.isPlayingFilm||state.isRunning;if(sp)sp.disabled=!state.isPlayingFilm;if(v)v.disabled=state.selectedImages.size===0||state.isGeneratingVideos||state.isRunning;const pb=document.getElementById('player-badge');if(pb)pb.textContent=state.videos.filter(x=>x.status==='done').length}
+
+function renderNews(){const l=document.getElementById('news-list');if(!l)return;if(state.newsItems.length===0){l.innerHTML='<div style="padding:1.2rem;text-align:center;color:var(--faint);font-size:.8rem;">Aucune actualité chargée.</div>';return}l.innerHTML=state.newsItems.slice(0,25).map(it=>{const sel=state.selectedNews.some(n=>n.rank===it.rank);return'<div class="news-item'+(sel?' selected':'')+'" data-news-rank="'+it.rank+'"><div class="news-check">✓</div><div><div class="news-title">'+esc(it.title)+'</div>'+(it.source?('<div class="news-src">'+esc(it.source)+'</div>'):'')+'</div></div>'}).join('');l.querySelectorAll('.news-item').forEach(el=>{el.addEventListener('click',()=>{const r=parseInt(el.dataset.newsRank,10);const it=state.newsItems.find(n=>n.rank===r);if(!it)return;const i=state.selectedNews.findIndex(n=>n.rank===r);if(i>=0)state.selectedNews.splice(i,1);else if(state.selectedNews.length<10)state.selectedNews.push(it);else showToast('Maximum 10 sujets','warn');renderNews();updateButtons()})});const b=document.getElementById('news-badge');if(b)b.textContent=state.newsItems.length+' sujets';const sb=document.getElementById('news-selected-badge');if(sb)sb.textContent=state.selectedNews.length+' sélectionnée(s)'}
+
+function renderScript(){const v=document.getElementById('script-view');if(!v)return;if(!state.script){v.textContent='Le scénario apparaîtra ici…';return}const s=state.script,p=s.presenter||{};let h='<div class="script-title">📖 '+esc(s.title||'Sans titre')+'</div>';h+='<div class="script-logline">'+esc(s.logline||'')+'</div>';h+='<div class="script-meta">';h+='🎙️ Présentateur : <strong style="color:var(--acc);">'+esc(p.name||'—')+'</strong><br>';if(p.cat_face)h+='🐱 Tête : '+esc(p.cat_face)+'<br>';if(p.helmet)h+='🪖 Casque : '+esc(p.helmet)+'<br>';if(p.outfit)h+='👔 Tenue : '+esc(p.outfit)+'<br>';if(state.styleObj)h+='🎨 Style : '+esc(state.styleObj.label);h+='</div>';(s.scenes||[]).forEach((sc,i)=>{const c=sc.character||{};h+='<div class="script-scene">';h+='<div class="sc-head">🎬 Scène '+(sc.scene_number||(i+1))+' · '+esc((sc.type||'').toUpperCase())+(sc.news_index?' · Sujet '+sc.news_index:'')+'</div>';if(c.name)h+='<div class="sc-line"><span class="sc-label">🐱 Chat</span><strong>'+esc(c.name)+'</strong>'+(c.cat_face?(' — '+esc(c.cat_face)):'')+'</div>';h+='<div class="sc-line"><span class="sc-label">Décor</span>'+esc(sc.decor||'')+'</div>';h+='<div class="sc-line"><span class="sc-label">Action</span>'+esc(sc.action||'')+'</div>';if(Array.isArray(sc.shots)&&sc.shots.length)h+='<div class="sc-line" style="font-family:var(--fm);font-size:.72rem;color:var(--dim);"><span class="sc-label">🎞️ Montage</span>'+sc.shots.length+' plans</div>';if(sc.dialogue&&sc.dialogue.line_fr)h+='<div class="sc-line sc-dialogue"><span class="sc-label">🔊 Voix</span><strong>'+esc(sc.dialogue.speaker||'')+'</strong> — « '+esc(sc.dialogue.line_fr)+' »</div>';if(sc.text_overlay_fr)h+='<div class="sc-line" style="color:var(--acc2);font-family:var(--fm);font-size:.75rem;"><span class="sc-label">📺 Bandeau</span>'+esc(sc.text_overlay_fr)+'</div>';h+='</div>'});v.innerHTML=h;const b=document.getElementById('script-badge');if(b)b.textContent=(s.scenes||[]).length+' scènes'}
+
+function renderImagesGrid(){const g=document.getElementById('images-grid');if(!g)return;if(state.images.length===0){g.innerHTML='';return}g.innerHTML=state.images.map((im,i)=>{const s=state.selectedImages.has(i);if(im.status==='loading')return'<div class="image-card loading">Génération '+(i+1)+'…</div>';if(im.status==='error')return'<div class="image-card loading" style="color:var(--err);">Erreur '+(i+1)+'</div>';return'<div class="image-card'+(s?' selected':'')+'" data-img-index="'+i+'"><img src="'+im.url+'" alt="" loading="lazy"><div class="img-label">Scène '+(i+1)+'</div><div class="img-check">✓</div></div>'}).join('');g.querySelectorAll('.image-card[data-img-index]').forEach(el=>{el.addEventListener('click',()=>{const i=parseInt(el.dataset.imgIndex,10);if(state.selectedImages.has(i))state.selectedImages.delete(i);else state.selectedImages.add(i);renderImagesGrid();updateButtons()})});const c=document.getElementById('images-count');if(c)c.textContent=state.images.filter(i=>i.status==='done').length;const sc=document.getElementById('images-selected');if(sc)sc.textContent=state.selectedImages.size+' sélectionnée(s)'}
+
+function renderCustomImages(){const g=document.getElementById('custom-images-grid');if(!g)return;if(state.customImages.length===0){g.innerHTML='';return}g.innerHTML=state.customImages.map((im,i)=>{return'<div class="image-card custom"><img src="'+im.url+'" alt="" loading="lazy"><div class="img-label">Image '+(i+1)+'</div></div>'}).join('');const b=document.getElementById('custom-images-badge');if(b)b.textContent=state.customImages.length}
+
+function renderVideosGrid(){const g=document.getElementById('videos-grid');if(!g)return;while(g.children.length>state.videos.length)g.removeChild(g.lastChild);for(let i=g.children.length;i<state.videos.length;i++){const c=document.createElement('div');c.className='scene-card';c.dataset.index=String(i);c.dataset.status='';c.dataset.progress='';c.dataset.url='';c.innerHTML='<div class="scene-card-header"><span class="scene-card-title">🎬 Scène '+(i+1)+'</span><span class="scene-card-status"></span></div><div class="scene-card-body"></div>';g.appendChild(c)}state.videos.forEach((v,i)=>{const c=g.children[i];if(!c)return;const tE=c.querySelector('.scene-card-title'),sE=c.querySelector('.scene-card-status'),bE=c.querySelector('.scene-card-body');const tT='🎬 Scène '+(i+1)+(v.type?' · '+v.type:'');if(tE.textContent!==tT)tE.textContent=tT;const nc='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':(v.status==='loading'||v.status==='pending')?'generating':'');if(c.className!==nc)c.className=nc;if(v.status==='done'&&v.url){if(c.dataset.url!==v.url||!bE.querySelector('video')){sE.innerHTML='<span style="color:var(--ok);">✓</span>';bE.innerHTML='';const vid=document.createElement('video');vid.src=v.url;vid.controls=true;vid.preload='metadata';vid.setAttribute('playsinline','');vid.setAttribute('webkit-playsinline','');vid.muted=true;bE.appendChild(vid);const dl=document.createElement('a');dl.className='scene-download';dl.href=v.url;dl.target='_blank';dl.rel='noopener noreferrer';dl.setAttribute('download','scene-'+(i+1)+'.mp4');dl.textContent='⬇ Télécharger';bE.appendChild(dl);c.dataset.url=v.url}}else if(v.status==='error'){if(c.dataset.status!=='error'){sE.innerHTML='<span style="color:var(--err);">✕</span>';bE.innerHTML='<div class="scene-placeholder" style="color:var(--err);">Erreur : '+esc(v.error||'inconnue')+'</div>'}}else{sE.innerHTML='<span class="spinner-mini"></span>';const pt=v.progress||'En attente…';if(c.dataset.progress!==pt||c.dataset.status!==v.status){bE.innerHTML='<div class="scene-placeholder"><div class="spinner-mini"></div><span>'+esc(pt)+'</span></div>'}}c.dataset.status=v.status||'';c.dataset.progress=v.progress||''});const cn=document.getElementById('videos-count');if(cn)cn.textContent=state.videos.filter(v=>v.status==='done').length+'/'+state.videos.length}
+
+// ── PIPELINE ──
+async function runJournal(){if(state.isRunning)return;if(!hasActiveKey()){showToast('Ajoutez une clé API','error');return}const useCustom=state.customImages.length>=1&&state.selectedNews.length===0;if(!useCustom&&state.selectedNews.length<1){showToast('Sélectionnez des sujets ou uploadez des images','error');return}state.isRunning=true;state.stopRequested=false;state.script=null;state.images=[];state.selectedImages=new Set();state.videos=[];state.style=document.getElementById('style-select').value;state.styleObj=STYLES[state.style]||STYLES.wes_anderson;state.workingPollUrlBuilder=null;state.useCustomImages=useCustom;document.getElementById('section-script').classList.add('hidden');document.getElementById('section-images').classList.add('hidden');document.getElementById('section-videos').classList.add('hidden');document.getElementById('section-player').classList.add('hidden');document.getElementById('images-grid').innerHTML='';document.getElementById('videos-grid').innerHTML='';renderScript();renderImagesGrid();renderVideosGrid();updateButtons();const nk=state.keyPool.filter(k=>k.active).length;journalLog('JT lancé. Style : '+state.styleObj.label+'. Workers : '+nk+'.','highlight');try{
+if(useCustom){
+  journalLog('Mode IMAGES PERSONNALISÉES : '+state.customImages.length+' images.','image');
+  setStatus('Images perso → vidéos…');
+  const scenes=state.customImages.map((im,i)=>({scene_number:i+1,type:'custom',news_index:0,character:{name:'Image '+(i+1)},decor:'custom image',action:'animate the uploaded image',shots:[],dialogue:{speaker:'',line_fr:''},text_overlay_fr:'',duration_seconds:8}));
+  state.script={title:'Clip personnalisé',logline:'Créé depuis '+state.customImages.length+' image(s)',presenter:{name:'—'},scenes:scenes};
+  renderScript();revealSection('section-script');
+  state.images=state.customImages.map(im=>({status:'done',url:im.url,prompt:'custom'}));
+  state.selectedImages=new Set(state.images.map((_,i)=>i));
+  renderImagesGrid();
+  setStatus('Lancement des vidéos…');
+  await generateVideosPhase();
+  state.isRunning=false;updateButtons();return;
 }
+setStatus('Étape 1/5 — Écriture du scénario…');journalLog('Scénario en style '+state.styleObj.label+'…','script');const script=await llmWriteScript(state.selectedNews,state.styleObj);state.script=script;renderScript();revealSection('section-script');journalLog('Scénario prêt : '+(script.scenes||[]).length+' scènes.','success');await sleep(500);if(state.stopRequested)throw new Error('Arrêt demandé');setStatus('Étape 2/5 — Génération des images…');journalLog('Génération des images (parallèle x3)…','image');revealSection('section-images');const scenes=script.scenes||[];state.images=scenes.map(()=>({status:'loading',url:null,prompt:null}));renderImagesGrid();const tasks=scenes.map(async(scene,idx)=>{if(state.stopRequested)return;const prompt=buildImagePrompt(scene,script,state.styleObj);try{const url=await generateImage(prompt);state.images[idx]={status:'done',url:url,prompt:prompt};state.selectedImages.add(idx);renderImagesGrid();debugLog('success','IMAGE '+(idx+1),'OK')}catch(e){if(e.message==='Arrêt demandé')return;state.images[idx]={status:'error',url:null,prompt:prompt};renderImagesGrid();debugLog('error','IMAGE '+(idx+1),e.message)}});for(let i=0;i<tasks.length;i+=3){if(state.stopRequested)break;await Promise.allSettled(tasks.slice(i,i+3))}const ok=state.images.filter(i=>i.status==='done').length;journalLog(ok+'/'+scenes.length+' images générées. Valide puis continue.','image');setStatus('Valide les images puis continue');await sleep(800);setStatus(null);state.isRunning=false;updateButtons();journalLog('En attente de validation des images…','highlight')
+}catch(e){if(e.message==='Arrêt demandé'){journalLog('Arrêt demandé.','warn');setStatus('Arrêté.');await sleep(1200);setStatus(null)}else{journalLog('Erreur : '+e.message,'error');debugLog('error','JOURNAL',e.message);setStatus('Erreur — voir console.');await sleep(2400);setStatus(null)}state.isRunning=false;state.stopRequested=false;updateButtons()}}
 
-function pickPalette(){return WA_PALETTES[Math.floor(Math.random()*WA_PALETTES.length)]}
+async function generateVideosPhase(){if(state.isGeneratingVideos)return;if(state.selectedImages.size===0){showToast('Sélectionnez au moins une image','warn');return}if(!state.script){showToast('Scénario manquant','error');return}state.isGeneratingVideos=true;state.stopRequested=false;updateButtons();const scenes=state.script.scenes||[];const idxs=Array.from(state.selectedImages).sort((a,b)=>a-b);state.videos=idxs.map(idx=>({status:'pending',url:null,prompt:'',type:(scenes[idx]&&scenes[idx].type)||'scene',progress:'En attente…',sceneIndex:idx}));document.getElementById('videos-grid').innerHTML='';renderVideosGrid();revealSection('section-videos');const wc=Math.max(1,state.keyPool.filter(k=>k.active).length);journalLog('Lancement de '+wc+' worker(s) sur '+idxs.length+' scènes.','video');const queue=idxs.map((sIdx,vIdx)=>({sceneIdx:sIdx,videoIdx:vIdx}));const workers=[];for(let w=0;w<wc;w++)workers.push(videoWorker(w,queue,scenes));await Promise.all(workers);state.isGeneratingVideos=false;updateButtons();const done=state.videos.filter(v=>v.status==='done').length;journalLog('Bilan : '+done+'/'+idxs.length+' vidéos.','video',done>0?'success':'error');if(done>0){document.getElementById('section-player').classList.remove('hidden');document.getElementById('section-player').classList.add('open');revealSection('section-player')}}
 
-function buildScriptPrompt(newsList, palette){
-  const paletteStr=palette.colors.join(', ');
-  const newsBlock=newsList.map((n,i)=>(i+1)+'. « '+n.title+' »'+(n.source?' ('+n.source+')':'')).join('\n');
-  const totalScenes=newsList.length+2;
-  return [
-    'Tu es scénariste et réalisateur d\'un JOURNAL TÉLÉVISÉ CINÉMATOGRAPHIQUE DE 50 À 90 SECONDES, style WES ANDERSON.',
-    'Structure : OUVERTURE PLATEAU → '+newsList.length+' REPORTAGES → CONCLUSION PLATEAU.',
-    '',
-    'SUJETS :', newsBlock, '',
-    'STYLE WES ANDERSON : symétrie bilatérale parfaite, personnages centrés, caméra perpendiculaire aux murs, pellicule 35mm grain visible.',
-    'MONTAGE : CHAQUE scène = 4 à 5 PLANS avec CUTS FRANCS.',
-    'CAMÉRA : locked-off, slow dolly-in, whip pan, snap zoom.',
-    'COULEURS : palette pastel coordonnée uniquement.',
-    '',
-    'PERSONNAGES : CHATONS KUNG-FU — petits chatons kawaii anthropomorphes. Chaque chaton porte un CASQUE DE MOTO RÉTRO + TENUE DE SHAOLIN. Expressions DEADPAN.',
-    'PRÉSENTATEUR : identique scènes 1 et '+totalScenes+'.',
-    'REPORTERS : personnages UNIQUES (races différentes).',
-    '',
-    'DÉCORS : rétrofuturistes pastel, uniques à chaque reportage.',
-    '',
-    'DIALOGUES : CHAQUE scène DOIT avoir "dialogue" avec "line_fr" EN FRANÇAIS. 5 à 10 mots MAX.',
-    '',
-    'PALETTE IMPOSÉE : '+palette.label+' → '+paletteStr,
-    '',
-    'RÈGLES JSON : chaînes sur UNE LIGNE. Pas de virgule finale.',
-    '',
-    'FORMAT (UNIQUEMENT ce JSON) :',
-    '{',
-    '  "title": "titre",',
-    '  "logline": "phrase",',
-    '  "presenter": { "name": "Prénom Nom", "cat_face": "siamois", "helmet": "casque chromé", "outfit": "kimono rose", "physical_description": "cute kawaii humanoid kitten with siamese cat face, chrome retro motorcycle helmet, pastel pink Shaolin kimono" },',
-    '  "scenes": [',
-    '    { "scene_number": 1, "type": "plateau", "news_index": 0, "character": { "name": "…", "cat_face": "…", "helmet": "…", "outfit": "…", "physical_description": "…" }, "decor": "english", "action": "english", "shots": [ { "shot_number": 1, "camera": { "type": "wide symmetric shot", "movement": "locked-off", "framing": "centered wide" }, "description": "shot 1" }, { "shot_number": 2, "camera": { "type": "medium shot", "movement": "slow dolly-in", "framing": "centered medium" }, "description": "shot 2" }, { "shot_number": 3, "camera": { "type": "close-up", "movement": "locked-off", "framing": "centered close-up" }, "description": "shot 3" }, { "shot_number": 4, "camera": { "type": "champ-contrechamp", "movement": "locked-off", "framing": "centered medium" }, "description": "shot 4" } ], "dialogue": { "speaker": "Nom", "line_fr": "Bonsoir, voici les titres." }, "text_overlay_fr": "LE JOURNAL", "duration_seconds": 8 }',
-    '  ]',
-    '}',
-    '(génère exactement '+totalScenes+' scènes)'
-  ].join('\n');
-}
+async function videoWorker(wid,queue,scenes){while(queue.length>0&&!state.stopRequested){const t=queue.shift();if(!t)break;await generateOneVideo(t.sceneIdx,t.videoIdx,scenes,wid)}}
+async function generateOneVideo(sIdx,vIdx,scenes,wid){if(state.stopRequested)return;const scene=scenes[sIdx];const im=state.images[sIdx];if(!im||im.status!=='done'||!im.url){state.videos[vIdx].status='error';state.videos[vIdx].error='Image manquante';renderVideosGrid();return}const prompt=state.useCustomImages?'animate this image with subtle camera movement, keep the character and scene intact, cinematic quality, smooth motion':buildVideoPrompt(scene,state.script,state.styleObj);state.videos[vIdx].status='loading';state.videos[vIdx].prompt=prompt;state.videos[vIdx].progress='Initialisation…';renderVideosGrid();const cn=(scene.character&&scene.character.name)||'?';const line=(scene.dialogue&&scene.dialogue.line_fr)||'';journalLog('Worker '+(wid+1)+' → Scène '+(sIdx+1)+' ['+cn+'] : '+(line?('« '+line.slice(0,45)+'… »'):'…'),'video');try{const vId=await createVideoTask(prompt,im.url,SCENE_DURATION_FRAMES_DEFAULT);const vUrl=await pollVideo(vId,(p)=>{state.videos[vIdx].progress=p;renderVideosGrid()});state.videos[vIdx]={status:'done',url:vUrl,prompt:prompt,type:scene.type||'scene',sceneIndex:sIdx};renderVideosGrid();journalLog('Worker '+(wid+1)+' → Scène '+(sIdx+1)+' prête.','success')}catch(e){if(e.message==='Arrêt demandé')return;state.videos[vIdx]={status:'error',url:null,prompt:prompt,type:scene.type||'scene',error:e.message,sceneIndex:sIdx};renderVideosGrid();journalLog('Worker '+(wid+1)+' → Scène '+(sIdx+1)+' échouée : '+e.message,'error');debugLog('error','VIDÉO '+(sIdx+1),e.message)}}
 
-function buildVideoPromptFromScene(scene, script, palette){
-  const presenter=script.presenter||{};
-  const sceneChar=scene.character||{};
-  const charName=sceneChar.name||presenter.name||'Personnage';
-  const charDesc=sceneChar.physical_description||presenter.physical_description||'cute kawaii humanoid kitten, retro motorcycle helmet, Shaolin kimono';
-  const isPlateau=(scene.type==='plateau');
-  const newsTitle=(scene.news_index&&state.selectedNews[scene.news_index-1])?state.selectedNews[scene.news_index-1].title:'';
-  const spokenLine=(scene.dialogue&&scene.dialogue.line_fr)?scene.dialogue.line_fr:'';
-  const shots=Array.isArray(scene.shots)?scene.shots:[];
-  let montageBlock='';
-  if(shots.length){
-    montageBlock='MONTAGE — '+shots.length+' SHOTS WITH HARD CUTS:\n'+shots.map((sh,i)=>{
-      const c=sh.camera||{};
-      return '  SHOT '+(i+1)+' — '+(c.type||'symmetric')+' / '+(c.movement||'locked-off')+' : '+(sh.description||'');
-    }).join('\n');
-  } else {montageBlock='MONTAGE — 4 SYMMETRIC SHOTS WITH HARD CUTS.';}
-  return [
-    'A WES ANDERSON CINEMATIC NEWS BROADCAST — SHOT ON 35MM FILM.',
-    '► Perfect bilateral symmetry, dead-center framing, planimetric staging, locked-off or slow dolly-in.',
-    '► HARD CUTS between shots. Shot-reverse-shot. Insert shots. Each shot 1-2 seconds.',
-    '► 35mm film grain, warm halation, soft contrast, no digital sharpness.',
-    '► PALETTE : '+palette.label+' → '+palette.colors.join(', ')+'.',
-    '► CHARACTERS — KUNG FU KITTENS : every person is a CUTE KAWAII HUMANOID KITTEN with retro motorcycle helmet and pastel Shaolin kimono, deadpan.',
-    isPlateau?'PRESENTER (same as scenes 1 and '+((script.scenes||[]).length)+') :':'FEATURED REPORTER (unique) :',
-    '  '+charName+' — '+charDesc,
-    'SCENE '+(scene.scene_number||'?')+' — '+String(scene.type||'scene').toUpperCase(),
-    newsTitle?('NEWS TOPIC : "'+newsTitle+'"'):'',
-    'DECOR : '+(scene.decor||''),
-    'ACTION : '+(scene.action||''),
-    spokenLine?('SPOKEN LINE (French, mouth clearly moving) : "'+spokenLine+'"'):'',
-    montageBlock,
-    'CONSTRAINTS : 35mm grain, hard cuts, symmetry, pastel palette, no text, no subtitles, no watermarks. Character faces camera and speaks.'
-  ].filter(Boolean).join('\n');
-}
-
-function buildImageFallbackPrompt(scene, script, palette){
-  const presenter=script.presenter||{};
-  const sceneChar=scene.character||{};
-  const charName=sceneChar.name||presenter.name||'Personnage';
-  const charDesc=sceneChar.physical_description||presenter.physical_description||'cute kawaii humanoid kitten, retro motorcycle helmet, Shaolin kimono';
-  return [
-    'Wes Anderson cinematic keyframe, shot on 35mm film, visible grain, warm halation, pastel palette.',
-    'Perfect bilateral symmetry, dead-center framing, planimetric staging, retro-futuristic 1960s.',
-    'PALETTE : '+palette.colors.join(', ')+'.',
-    'CHARACTER : '+charName+' — '+charDesc+'.',
-    'SCENE : '+(scene.decor||'')+' — '+(scene.action||''),
-    'No text, no watermarks. Horizontal 16:9. Film grain.'
-  ].join('\n');
-}
-
-async function callChatCompletion(systemPrompt, userPrompt, label, maxTokens, temperature){
-  const sysMsg=sanitizeForApi(systemPrompt)||'Assistant.';
-  const usrMsg=sanitizeForApi(userPrompt);
-  if(!usrMsg)throw new Error('userPrompt vide');
-  const body={model:MODEL_TEXT,messages:[{role:'system',content:sysMsg},{role:'user',content:usrMsg}],temperature:typeof temperature==='number'?temperature:0.7,max_tokens:maxTokens||32000,reasoning_effort:'none',chat_template_kwargs:{enable_thinking:false}};
-  const res=await apiFetch(API_BASE+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)},label,4);
-  const data=await res.json();
-  const choice=data.choices&&data.choices[0];const msg=choice&&choice.message;
-  let content=msg&&msg.content;
-  if(!content&&msg&&msg.reasoning_content)content=msg.reasoning_content;
-  debugLog('response',label,'finish='+(choice&&choice.finish_reason)+' · len='+((content&&content.length)||0));
-  return content;
-}
-
-function buildFallbackScript(newsList, palette){
-  const presenter={name:'Élise Moreau',cat_face:'siamoise aux grands yeux bleus',helmet:'casque de moto rétro chromé',outfit:'kimono de Shaolin rose poudré',physical_description:'cute kawaii humanoid kitten with siamese cat face, chrome retro motorcycle helmet, pastel pink Shaolin kimono, wes anderson deadpan'};
-  const catBreeds=['siamois','persan','écossais','chartreux','maine coon','angora','bengal','sacré de birmanie','norvégien','sphynx'];
-  const helmetStyles=['casque chromé','casque à bulle bleu ciel','casque moutarde','casque de pilote','casque rose poudré'];
-  const outfitStyles=['kimono corail','kimono lavande','kimono sauge','kimono bleu ciel','kimono moutarde'];
-  const defaultShotsFor=()=>([
-    {shot_number:1,camera:{type:'wide symmetric shot',movement:'locked-off',framing:'centered wide'},description:'wide symmetric tableau'},
-    {shot_number:2,camera:{type:'medium shot',movement:'slow dolly-in',framing:'centered medium'},description:'centered medium shot'},
-    {shot_number:3,camera:{type:'close-up',movement:'locked-off',framing:'centered close-up'},description:'close-up kitten face'},
-    {shot_number:4,camera:{type:'champ-contrechamp',movement:'locked-off',framing:'centered medium'},description:'shot-reverse-shot'}
-  ]);
-  const scenes=[];
-  scenes.push({scene_number:1,type:'plateau',news_index:0,character:Object.assign({},presenter),decor:'symmetric retro-futuristic 1960s pastel TV studio',action:'the presenter kitten speaks to camera deadpan',shots:defaultShotsFor(),dialogue:{speaker:presenter.name,line_fr:'Bonsoir, voici les titres de ce soir.'},text_overlay_fr:'LE JOURNAL',duration_seconds:8});
-  newsList.forEach((news,i)=>{
-    const breed=catBreeds[i%catBreeds.length];
-    const helmet=helmetStyles[i%helmetStyles.length];
-    const outfit=outfitStyles[i%outfitStyles.length];
-    const reporter={name:'Reporter '+(i+1),cat_face:breed+' aux grands yeux',helmet:helmet,outfit:outfit,physical_description:'cute kawaii humanoid kitten with '+breed+' cat face, '+helmet+', '+outfit};
-    let line=(news.title||'').trim();if(line.length>90)line=line.slice(0,87)+'…';
-    scenes.push({scene_number:i+2,type:'reportage',news_index:i+1,character:reporter,decor:'retro-futuristic pastel set tied to: '+news.title.slice(0,60),action:'the reporter kitten speaks to camera deadpan',shots:defaultShotsFor(),dialogue:{speaker:reporter.name,line_fr:line},text_overlay_fr:(news.title||'').toUpperCase().slice(0,60),duration_seconds:8});
-  });
-  scenes.push({scene_number:newsList.length+2,type:'plateau',news_index:0,character:Object.assign({},presenter),decor:'symmetric pastel TV studio (same as scene 1)',action:'presenter speaks deadpan',shots:defaultShotsFor(),dialogue:{speaker:presenter.name,line_fr:'Merci de nous avoir suivis, bonne soirée.'},text_overlay_fr:'FIN DU JOURNAL',duration_seconds:8});
-  return {title:'Le Journal',logline:'Un JT cinématographique style Wes Anderson.',presenter:presenter,scenes:scenes};
-}
-
-async function llmWriteScript(newsList, palette){
-  const prompt=buildScriptPrompt(newsList, palette);
-  const systemPrompt='Tu es scénariste. Tu retournes TOUJOURS un JSON strict. Pas de markdown. Chaînes sur UNE LIGNE. Chaque scène DOIT avoir 4-5 plans et dialogue.line_fr EN FRANÇAIS (5-10 mots). Personnages : CHATONS KUNG-FU casqués. Style Wes Anderson.';
-  for(let attempt=1;attempt<=2;attempt++){
-    const temp=attempt===1?0.7:0.3;
-    debugLog('ai','PROMPT SCÉNARIO','Tentative '+attempt+'/2 (temp='+temp+')');
-    let content;
-    try{content=await callChatCompletion(systemPrompt,prompt,'Scénario (essai '+attempt+')',32000,temp)}
-    catch(e){debugLog('error','SCÉNARIO','Appel '+attempt+' : '+e.message);continue}
-    if(!content){debugLog('warn','SCÉNARIO','Contenu vide');continue}
-    const parsed=extractJson(content);
-    if(parsed&&parsed.scenes&&Array.isArray(parsed.scenes)&&parsed.scenes.length>=2){
-      debugLog('success','SCÉNARIO','JSON valide (essai '+attempt+')');
-      if(!parsed.presenter||!parsed.presenter.name){parsed.presenter={name:'Élise Moreau',cat_face:'siamoise',helmet:'casque chromé',outfit:'kimono rose',physical_description:'cute kawaii humanoid kitten with siamese cat face'};}
-      const catBreeds=['siamois','persan','écossais','chartreux','maine coon','angora','bengal','sacré de birmanie','norvégien','sphynx'];
-      const helmetStyles=['casque chromé','casque bleu ciel','casque moutarde','casque de pilote','casque rose'];
-      const outfitStyles=['kimono corail','kimono lavande','kimono sauge','kimono bleu ciel','kimono moutarde'];
-      parsed.scenes.forEach((sc,i)=>{
-        if(sc.news_index===undefined||sc.news_index===null){sc.news_index=(i>=1&&i<=newsList.length)?i:0;}
-        if(!sc.character||!sc.character.name){
-          if(sc.type==='plateau'){sc.character=Object.assign({},parsed.presenter);}
-          else{const breed=catBreeds[(i-1+catBreeds.length)%catBreeds.length];const helmet=helmetStyles[(i-1+helmetStyles.length)%helmetStyles.length];const outfit=outfitStyles[(i-1+outfitStyles.length)%outfitStyles.length];sc.character={name:'Reporter '+i,cat_face:breed,helmet:helmet,outfit:outfit,physical_description:'cute kawaii humanoid kitten with '+breed+' cat face, '+helmet+', '+outfit};}
-        }
-        if(!Array.isArray(sc.shots)||sc.shots.length<4){
-          sc.shots=[
-            {shot_number:1,camera:{type:'wide symmetric shot',movement:'locked-off',framing:'centered wide'},description:'wide tableau'},
-            {shot_number:2,camera:{type:'medium shot',movement:'slow dolly-in',framing:'centered medium'},description:'medium shot'},
-            {shot_number:3,camera:{type:'close-up',movement:'locked-off',framing:'centered close-up'},description:'close-up kitten'},
-            {shot_number:4,camera:{type:'champ-contrechamp',movement:'locked-off',framing:'centered medium'},description:'shot-reverse-shot'}
-          ];
-        }
-        if(!sc.dialogue||!sc.dialogue.line_fr){
-          const newsTitle=(sc.news_index&&newsList[sc.news_index-1])?newsList[sc.news_index-1].title:'';
-          let line;
-          if(sc.type==='plateau'&&sc.scene_number===1)line='Bonsoir, voici les titres de ce soir.';
-          else if(sc.type==='plateau')line='Merci de nous avoir suivis, bonne soirée.';
-          else if(newsTitle)line=newsTitle.length>90?newsTitle.slice(0,87)+'…':newsTitle;
-          else line='Voici notre reportage.';
-          sc.dialogue={speaker:(sc.character&&sc.character.name)||'Présentateur',line_fr:line};
-        }
-      });
-      return parsed;
-    } else {debugLog('error','SCÉNARIO','JSON invalide essai '+attempt);}
-  }
-  debugLog('warn','SCÉNARIO','Fallback programmatique');
-  journalLog('⚠️ LLM a échoué — scénario de secours.','warn');
-  return buildFallbackScript(newsList, palette);
-}
-
-function updateButtons(){
-  const genBtn=document.getElementById('generate-btn');
-  const stopBtn=document.getElementById('stop-btn');
-  const playBtn=document.getElementById('play-film-btn');
-  const stopPlayBtn=document.getElementById('stop-play-btn');
-  const validateBtn=document.getElementById('validate-images-btn');
-  const hasKey=hasActiveKey();
-  const hasNews=state.selectedNews.length>=1;
-  const hasVideos=state.videos.filter(v=>v.status==='done').length>0;
-  if(genBtn){
-    genBtn.disabled=!hasKey||!hasNews||state.isRunning;
-    if(state.isRunning)genBtn.innerHTML='⏳ Génération en cours…';
-    else if(!hasKey)genBtn.innerHTML='🔑 Ajoutez au moins une clé API';
-    else if(!hasNews)genBtn.innerHTML='📰 Sélectionnez des sujets';
-    else genBtn.innerHTML='▶ Générer le JT<span style="display:block;font-size:.65rem;letter-spacing:.15em;color:var(--dim);margin-top:.4rem;font-weight:400;text-transform:none;">'+state.selectedNews.length+' reportages · '+state.keyPool.filter(k=>k.active).length+' worker(s)</span>';
-  }
-  if(stopBtn)stopBtn.classList.toggle('visible',state.isRunning);
-  if(playBtn)playBtn.disabled=!hasVideos||state.isPlayingFilm||state.isRunning;
-  if(stopPlayBtn)stopPlayBtn.disabled=!state.isPlayingFilm;
-  if(validateBtn)validateBtn.disabled=state.selectedImages.size===0||state.isGeneratingVideos||state.isRunning;
-  const pb=document.getElementById('player-badge');
-  if(pb)pb.textContent=state.videos.filter(v=>v.status==='done').length;
-}
-
-function renderNews(){
-  const list=document.getElementById('news-list');if(!list)return;
-  if(state.newsItems.length===0){list.innerHTML='<div style="padding:1.2rem;text-align:center;color:var(--faint);font-size:.8rem;">Aucune actualité chargée.</div>';return;}
-  list.innerHTML=state.newsItems.slice(0,25).map((item)=>{
-    const selected=state.selectedNews.some(n=>n.rank===item.rank);
-    return '<div class="news-item'+(selected?' selected':'')+'" data-news-rank="'+item.rank+'"><div class="news-check">✓</div><div><div class="news-title">'+esc(item.title)+'</div>'+(item.source?('<div class="news-src">'+esc(item.source)+'</div>'):'')+'</div></div>';
-  }).join('');
-  list.querySelectorAll('.news-item').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const rank=parseInt(el.dataset.newsRank,10);
-      const item=state.newsItems.find(n=>n.rank===rank);if(!item)return;
-      const idx=state.selectedNews.findIndex(n=>n.rank===rank);
-      if(idx>=0)state.selectedNews.splice(idx,1);
-      else if(state.selectedNews.length<10)state.selectedNews.push(item);
-      else showToast('Maximum 10 sujets','warn');
-      renderNews();updateButtons();
-    });
-  });
-  const badge=document.getElementById('news-badge');if(badge)badge.textContent=state.newsItems.length+' sujets';
-  const selBadge=document.getElementById('news-selected-badge');if(selBadge)selBadge.textContent=state.selectedNews.length+' sélectionnée(s)';
-}
-
-function renderScript(){
-  const view=document.getElementById('script-view');if(!view)return;
-  if(!state.script){view.textContent='Le scénario apparaîtra ici…';return;}
-  const s=state.script;const presenter=s.presenter||{};
-  let html='<div class="script-title">📖 '+esc(s.title||'Sans titre')+'</div>';
-  html+='<div class="script-logline">'+esc(s.logline||'')+'</div>';
-  html+='<div class="script-meta">🎙️ Présentateur : <strong style="color:var(--acc);">'+esc(presenter.name||'—')+'</strong><br>';
-  if(presenter.cat_face)html+='🐱 Tête : '+esc(presenter.cat_face)+'<br>';
-  if(presenter.helmet)html+='🪖 Casque : '+esc(presenter.helmet)+'<br>';
-  if(presenter.outfit)html+='👔 Tenue : '+esc(presenter.outfit)+'<br>';
-  if(state.palette)html+='🎨 Palette : '+esc(state.palette.label);
-  html+='</div>';
-  (s.scenes||[]).forEach((sc,i)=>{
-    const ch=sc.character||{};
-    html+='<div class="script-scene">';
-    html+='<div class="sc-head">🎬 Scène '+(sc.scene_number||(i+1))+' · '+esc((sc.type||'').toUpperCase())+(sc.news_index?' · Sujet '+sc.news_index:'')+'</div>';
-    if(ch.name)html+='<div class="sc-line"><span class="sc-label">🐱 Chat</span><strong>'+esc(ch.name)+'</strong>'+(ch.cat_face?(' — '+esc(ch.cat_face)):'')+'</div>';
-    html+='<div class="sc-line"><span class="sc-label">Décor</span>'+esc(sc.decor||'')+'</div>';
-    html+='<div class="sc-line"><span class="sc-label">Action</span>'+esc(sc.action||'')+'</div>';
-    if(Array.isArray(sc.shots)&&sc.shots.length){html+='<div class="sc-line" style="font-family:var(--fm);font-size:.72rem;color:var(--dim);"><span class="sc-label">🎞️ Montage</span>'+sc.shots.length+' plans</div>';}
-    if(sc.dialogue&&sc.dialogue.line_fr){html+='<div class="sc-line sc-dialogue"><span class="sc-label">🔊 Voix</span><strong>'+esc(sc.dialogue.speaker||'')+'</strong> — « '+esc(sc.dialogue.line_fr)+' »</div>';}
-    if(sc.text_overlay_fr){html+='<div class="sc-line" style="color:var(--acc2);font-family:var(--fm);font-size:.75rem;"><span class="sc-label">📺 Bandeau</span>'+esc(sc.text_overlay_fr)+'</div>';}
-    html+='</div>';
-  });
-  view.innerHTML=html;
-  const badge=document.getElementById('script-badge');if(badge)badge.textContent=(s.scenes||[]).length+' scènes';
-}
-
-function renderImagesGrid(){
-  const grid=document.getElementById('images-grid');if(!grid)return;
-  if(state.images.length===0){grid.innerHTML='';return;}
-  grid.innerHTML=state.images.map((img,i)=>{
-    const selected=state.selectedImages.has(i);
-    if(img.status==='loading')return '<div class="image-card loading">Génération '+(i+1)+'…</div>';
-    if(img.status==='error')return '<div class="image-card loading" style="color:var(--err);">Erreur '+(i+1)+'</div>';
-    return '<div class="image-card'+(selected?' selected':'')+'" data-img-index="'+i+'"><img src="'+img.url+'" alt="" loading="lazy"><div class="img-label">Scène '+(i+1)+'</div><div class="img-check">✓</div></div>';
-  }).join('');
-  grid.querySelectorAll('.image-card[data-img-index]').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const idx=parseInt(el.dataset.imgIndex,10);
-      if(state.selectedImages.has(idx))state.selectedImages.delete(idx);else state.selectedImages.add(idx);
-      renderImagesGrid();updateButtons();
-    });
-  });
-  const c=document.getElementById('images-count');if(c)c.textContent=state.images.filter(i=>i.status==='done').length;
-  const sc=document.getElementById('images-selected');if(sc)sc.textContent=state.selectedImages.size+' sélectionnée(s)';
-}
-
-function renderVideosGrid(){
-  const grid=document.getElementById('videos-grid');if(!grid)return;
-  while(grid.children.length>state.videos.length)grid.removeChild(grid.lastChild);
-  for(let i=grid.children.length;i<state.videos.length;i++){
-    const card=document.createElement('div');
-    card.className='scene-card';
-    card.dataset.index=String(i);
-    card.dataset.status='';
-    card.dataset.progress='';
-    card.dataset.url='';
-    card.innerHTML='<div class="scene-card-header"><span class="scene-card-title">🎬 Scène '+(i+1)+'</span><span class="scene-card-status"></span></div><div class="scene-card-body"></div>';
-    grid.appendChild(card);
-  }
-  state.videos.forEach((v,i)=>{
-    const card=grid.children[i];if(!card)return;
-    const titleEl=card.querySelector('.scene-card-title');
-    const statusEl=card.querySelector('.scene-card-status');
-    const bodyEl=card.querySelector('.scene-card-body');
-    const titleText='🎬 Scène '+(i+1)+(v.type?' · '+v.type:'');
-    if(titleEl.textContent!==titleText)titleEl.textContent=titleText;
-    const newClass='scene-card '+(v.status==='done'?'done':v.status==='error'?'error':(v.status==='loading'||v.status==='pending')?'generating':'');
-    if(card.className!==newClass)card.className=newClass;
-    if(v.status==='done'&&v.url){
-      if(card.dataset.url!==v.url||!bodyEl.querySelector('video')){
-        statusEl.innerHTML='<span style="color:var(--ok);">✓</span>';
-        bodyEl.innerHTML='';
-        const video=document.createElement('video');
-        video.src=v.url;video.controls=true;video.preload='metadata';
-        video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');video.muted=true;
-        bodyEl.appendChild(video);
-        const dl=document.createElement('a');
-        dl.className='scene-download';dl.href=v.url;dl.target='_blank';dl.rel='noopener noreferrer';
-        dl.setAttribute('download','scene-'+(i+1)+'.mp4');dl.textContent='⬇ Télécharger';
-        bodyEl.appendChild(dl);
-        card.dataset.url=v.url;
-      }
-    } else if(v.status==='error'){
-      if(card.dataset.status!=='error'){
-        statusEl.innerHTML='<span style="color:var(--err);">✕</span>';
-        bodyEl.innerHTML='<div class="scene-placeholder" style="color:var(--err);">Erreur : '+esc(v.error||'inconnue')+'</div>';
-      }
-    } else {
-      statusEl.innerHTML='<span class="spinner-mini"></span>';
-      const progressTxt=v.progress||'En attente…';
-      if(card.dataset.progress!==progressTxt||card.dataset.status!==v.status){
-        bodyEl.innerHTML='<div class="scene-placeholder"><div class="spinner-mini"></div><span>'+esc(progressTxt)+'</span></div>';
-      }
-    }
-    card.dataset.status=v.status||'';
-    card.dataset.progress=v.progress||'';
-  });
-  const c=document.getElementById('videos-count');if(c)c.textContent=state.videos.filter(v=>v.status==='done').length+'/'+state.videos.length;
-}
-
-async function runJournal(){
-  if(state.isRunning)return;
-  if(!hasActiveKey()){showToast('Ajoutez au moins une clé API','error');return;}
-  if(state.selectedNews.length<1){showToast('Sélectionnez des sujets','error');return;}
-  state.isRunning=true;state.stopRequested=false;state.script=null;state.images=[];
-  state.selectedImages=new Set();state.videos=[];state.palette=pickPalette();state.workingPollUrlBuilder=null;
-  document.getElementById('section-script').classList.add('hidden');
-  document.getElementById('section-images').classList.add('hidden');
-  document.getElementById('section-videos').classList.add('hidden');
-  document.getElementById('section-player').classList.add('hidden');
-  document.getElementById('images-grid').innerHTML='';
-  document.getElementById('videos-grid').innerHTML='';
-  renderScript();renderImagesGrid();renderVideosGrid();updateButtons();
-  const nKeys=state.keyPool.filter(k=>k.active).length;
-  journalLog('JT lancé. Palette : '+state.palette.label+'. Workers : '+nKeys+'.','highlight');
-  try{
-    setStatus('Étape 1/5 — Écriture du scénario…');
-    journalLog('J\'écris le scénario…','script');
-    const script=await llmWriteScript(state.selectedNews, state.palette);
-    state.script=script;renderScript();revealSection('section-script');
-    journalLog('Scénario prêt : '+(script.scenes||[]).length+' scènes.','success');
-    await sleep(500);
-    if(state.stopRequested)throw new Error('Arrêt demandé');
-    setStatus('Étape 2/5 — Génération des images…');
-    journalLog('Génération des images (parallèle x3)…','image');
-    revealSection('section-images');
-    const scenes=script.scenes||[];
-    state.images=scenes.map(()=>({status:'loading',url:null,prompt:null}));
-    renderImagesGrid();
-    const imageTasks=scenes.map(async (scene, idx)=>{
-      if(state.stopRequested)return;
-      const prompt=buildImageFallbackPrompt(scene, script, state.palette);
-      try{
-        const url=await generateImage(prompt);
-        state.images[idx]={status:'done',url:url,prompt:prompt};
-        state.selectedImages.add(idx);renderImagesGrid();
-        debugLog('success','IMAGE '+(idx+1),'OK');
-      }catch(e){
-        if(e.message==='Arrêt demandé')return;
-        state.images[idx]={status:'error',url:null,prompt:prompt};renderImagesGrid();
-        debugLog('error','IMAGE '+(idx+1),e.message);
-      }
-    });
-    const IMAGE_BATCH=3;
-    for(let i=0;i<imageTasks.length;i+=IMAGE_BATCH){if(state.stopRequested)break;await Promise.allSettled(imageTasks.slice(i,i+IMAGE_BATCH));}
-    const okImages=state.images.filter(i=>i.status==='done').length;
-    journalLog(okImages+'/'+scenes.length+' images générées. Valide puis continue.','image');
-    setStatus('Valide les images puis continue');await sleep(800);setStatus(null);
-    state.isRunning=false;updateButtons();
-    journalLog('En attente de validation des images…','highlight');
-  }catch(e){
-    if(e.message==='Arrêt demandé'){journalLog('Arrêt demandé.','warn');setStatus('Arrêté.');await sleep(1200);setStatus(null);}
-    else{journalLog('Erreur : '+e.message,'error');debugLog('error','JOURNAL',e.message);setStatus('Erreur — voir console.');await sleep(2400);setStatus(null);}
-    state.isRunning=false;state.stopRequested=false;updateButtons();
-  }
-}
-
-async function generateVideosPhase(){
-  if(state.isGeneratingVideos)return;
-  if(state.selectedImages.size===0){showToast('Sélectionnez au moins une image','warn');return;}
-  if(!state.script){showToast('Scénario manquant','error');return;}
-  state.isGeneratingVideos=true;state.stopRequested=false;updateButtons();
-  const scenes=state.script.scenes||[];
-  const selectedIndices=Array.from(state.selectedImages).sort((a,b)=>a-b);
-  state.videos=selectedIndices.map(idx=>({status:'pending',url:null,prompt:'',type:(scenes[idx]&&scenes[idx].type)||'scene',progress:'En attente…',sceneIndex:idx}));
-  document.getElementById('videos-grid').innerHTML='';renderVideosGrid();revealSection('section-videos');
-  const workerCount=Math.max(1,state.keyPool.filter(k=>k.active).length);
-  journalLog('Lancement de '+workerCount+' worker(s) parallèle(s) sur '+selectedIndices.length+' scènes.','video');
-  const queue=selectedIndices.map((sceneIdx, videoIdx)=>({sceneIdx, videoIdx}));
-  const workers=[];
-  for(let w=0;w<workerCount;w++)workers.push(videoWorker(w, queue, scenes));
-  await Promise.all(workers);
-  state.isGeneratingVideos=false;updateButtons();
-  const done=state.videos.filter(v=>v.status==='done').length;
-  journalLog('Bilan : '+done+'/'+selectedIndices.length+' vidéos prêtes.',done>0?'success':'error');
-  if(done>0){document.getElementById('section-player').classList.remove('hidden');document.getElementById('section-player').classList.add('open');revealSection('section-player');}
-}
-
-async function videoWorker(workerId, queue, scenes){
-  while(queue.length>0&&!state.stopRequested){
-    const task=queue.shift();if(!task)break;
-    await generateOneVideo(task.sceneIdx, task.videoIdx, scenes, workerId);
-  }
-}
-
-async function generateOneVideo(sceneIdx, videoIdx, scenes, workerId){
-  if(state.stopRequested)return;
-  const scene=scenes[sceneIdx];
-  const imgObj=state.images[sceneIdx];
-  if(!imgObj||imgObj.status!=='done'||!imgObj.url){
-    state.videos[videoIdx].status='error';
-    state.videos[videoIdx].error='Image manquante';
-    renderVideosGrid();return;
-  }
-  const prompt=buildVideoPromptFromScene(scene, state.script, state.palette);
-  state.videos[videoIdx].status='loading';
-  state.videos[videoIdx].prompt=prompt;
-  state.videos[videoIdx].progress='Initialisation…';
-  renderVideosGrid();
-  const charName=(scene.character&&scene.character.name)||'?';
-  const line=(scene.dialogue&&scene.dialogue.line_fr)||'';
-  journalLog('Worker '+(workerId+1)+' → Scène '+(sceneIdx+1)+' ['+charName+'] : '+(line?('« '+line.slice(0,45)+'… »'):'…'),'video');
-  try{
-    const videoIdObj=await createVideoTask(prompt, imgObj.url, SCENE_DURATION_FRAMES_DEFAULT);
-    const videoUrl=await pollVideo(videoIdObj,(prog)=>{state.videos[videoIdx].progress=prog;renderVideosGrid();});
-    state.videos[videoIdx]={status:'done',url:videoUrl,prompt:prompt,type:scene.type||'scene',sceneIndex:sceneIdx};
-    renderVideosGrid();
-    journalLog('Worker '+(workerId+1)+' → Scène '+(sceneIdx+1)+' prête.','success');
-  }catch(e){
-    if(e.message==='Arrêt demandé')return;
-    state.videos[videoIdx]={status:'error',url:null,prompt:prompt,type:scene.type||'scene',error:e.message,sceneIndex:sceneIdx};
-    renderVideosGrid();
-    journalLog('Worker '+(workerId+1)+' → Scène '+(sceneIdx+1)+' échouée : '+e.message,'error');
-    debugLog('error','VIDÉO '+(sceneIdx+1),e.message);
-  }
-}
-
+// ── TTS ──
 let ttsVoice=null;
-function pickFrenchVoice(){
-  if(!('speechSynthesis' in window))return null;
-  const voices=window.speechSynthesis.getVoices();
-  if(!voices||voices.length===0)return null;
-  const fr=voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith('fr'));
-  if(fr.length===0)return null;
-  const preferred=fr.find(v=>/premium|enhanced|amelie|thomas|audrey|marie/i.test(v.name));
-  return preferred||fr[0];
-}
-function initTTS(){
-  if(!('speechSynthesis' in window))return;
-  const update=()=>{ttsVoice=pickFrenchVoice();if(ttsVoice)debugLog('success','TTS','Voix : '+ttsVoice.name);};
-  update();window.speechSynthesis.onvoiceschanged=update;
-}
-function speakFR(text){
-  if(!state.voiceEnabled)return;if(!('speechSynthesis' in window))return;if(!text)return;
-  try{
-    window.speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang='fr-FR';u.rate=1.05;u.pitch=1.0;u.volume=1.0;
-    if(ttsVoice)u.voice=ttsVoice;
-    window.speechSynthesis.speak(u);
-    state.currentUtterance=u;
-    journalLog('🔊 « '+text.slice(0,90)+(text.length>90?'…':'')+' »','voice');
-  }catch(e){debugLog('warn','TTS','Erreur : '+e.message);}
-}
-function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}state.currentUtterance=null;}
-function getSceneSpeechLine(scene){
-  if(scene.dialogue&&scene.dialogue.line_fr)return scene.dialogue.line_fr;
-  if(scene.text_overlay_fr)return scene.text_overlay_fr;
-  return '';
-}
+function pickFrenchVoice(){if(!('speechSynthesis' in window))return null;const v=window.speechSynthesis.getVoices();if(!v||v.length===0)return null;const fr=v.filter(x=>x.lang&&x.lang.toLowerCase().startsWith('fr'));if(fr.length===0)return null;const p=fr.find(x=>/premium|enhanced|amelie|thomas|audrey|marie/i.test(x.name));return p||fr[0]}
+function initTTS(){if(!('speechSynthesis' in window))return;const u=()=>{ttsVoice=pickFrenchVoice();if(ttsVoice)debugLog('success','TTS','Voix : '+ttsVoice.name)};u();window.speechSynthesis.onvoiceschanged=u}
+function speakFR(text){if(!state.voiceEnabled)return;if(!('speechSynthesis' in window))return;if(!text)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='fr-FR';u.rate=1.05;u.pitch=1.0;u.volume=1.0;if(ttsVoice)u.voice=ttsVoice;window.speechSynthesis.speak(u);state.currentUtterance=u;journalLog('🔊 « '+text.slice(0,90)+(text.length>90?'…':'')+' »','voice')}catch(e){debugLog('warn','TTS','Erreur : '+e.message)}}
+function stopTTS(){try{if('speechSynthesis' in window)window.speechSynthesis.cancel()}catch(e){}state.currentUtterance=null}
+function getSceneSpeechLine(scene){if(scene.dialogue&&scene.dialogue.line_fr)return scene.dialogue.line_fr;if(scene.text_overlay_fr)return scene.text_overlay_fr;return ''}
 
-async function playFilm(){
-  const ready=state.videos.filter(v=>v.status==='done'&&v.url);
-  if(ready.length===0){showToast('Aucune vidéo à diffuser','error');return;}
-  if(state.isPlayingFilm)return;
-  state.isPlayingFilm=true;updateButtons();
-  const overlay=document.getElementById('player-overlay');
-  const canvas=document.getElementById('player-canvas');
-  const hint=document.getElementById('player-hint-overlay');
-  if(!overlay||!canvas)return;
-  const dpr=Math.min(window.devicePixelRatio||1,2);
-  const cssW=window.innerWidth;const cssH=window.innerHeight;
-  canvas.width=Math.round(cssW*dpr);canvas.height=Math.round(cssH*dpr);
-  canvas.style.width=cssW+'px';canvas.style.height=cssH+'px';
-  const ctx=canvas.getContext('2d');
-  overlay.classList.add('visible');
-  hint.classList.remove('hidden');
-  setTimeout(()=>hint.classList.add('hidden'),3500);
-  try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0);}}catch(e){}
-  journalLog('Diffusion du JT…','play');
-  const scenes=state.script.scenes||[];
-  for(let i=0;i<ready.length;i++){
-    if(!state.isPlayingFilm)break;
-    const v=ready[i];const scene=scenes[v.sceneIndex]||{};
-    const chName=(scene.character&&scene.character.name)||'';
-    journalLog('Séquence '+(i+1)+'/'+ready.length+(chName?' ['+chName+']':''),'play');
-    await playOneScene(v, scene, ctx, canvas, dpr);
-  }
-  stopFilmPlayback();
-  journalLog('Diffusion terminée.','success');
-}
+// ── PLAYER ──
+async function playFilm(){const ready=state.videos.filter(v=>v.status==='done'&&v.url);if(ready.length===0){showToast('Aucune vidéo à diffuser','error');return}if(state.isPlayingFilm)return;state.isPlayingFilm=true;updateButtons();const ov=document.getElementById('player-overlay'),cv=document.getElementById('player-canvas'),hn=document.getElementById('player-hint-overlay');if(!ov||!cv)return;const dpr=Math.min(window.devicePixelRatio||1,2);const w=window.innerWidth,h=window.innerHeight;cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);cv.style.width=w+'px';cv.style.height=h+'px';const ctx=cv.getContext('2d');ov.classList.add('visible');hn.classList.remove('hidden');setTimeout(()=>hn.classList.add('hidden'),3500);try{if('speechSynthesis' in window){const u0=new SpeechSynthesisUtterance(' ');u0.volume=0;window.speechSynthesis.speak(u0)}}catch(e){}journalLog('Diffusion du JT…','play');const scenes=(state.script&&state.script.scenes)||[];for(let i=0;i<ready.length;i++){if(!state.isPlayingFilm)break;const v=ready[i];const sc=scenes[v.sceneIndex]||{};const cn=(sc.character&&sc.character.name)||'';journalLog('Séquence '+(i+1)+'/'+ready.length+(cn?' ['+cn+']':''),'play');await playOneScene(v,sc,ctx,cv,dpr)}stopFilmPlayback();journalLog('Diffusion terminée.','success')}
 
-function playOneScene(videoObj, scene, ctx, canvas, dpr){
-  return new Promise((resolve)=>{
-    const video=document.createElement('video');
-    video.src=videoObj.url;video.playsInline=true;
-    video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
-    video.muted=true;video.crossOrigin='anonymous';
-    let ttsFired=false;let finished=false;
-    const finish=()=>{if(finished)return;finished=true;resolve();};
-    const startTTS=()=>{if(ttsFired)return;ttsFired=true;const line=getSceneSpeechLine(scene);if(line)speakFR(line);};
-    const ttsGuard=setTimeout(()=>{startTTS();},2000);
-    const drawOverlay=(w,h)=>{
-      const t=video.currentTime||0;const dur=video.duration||6;
-      let alpha=1;if(t<0.4)alpha=t/0.4;else if(dur-t<0.5)alpha=Math.max(0,(dur-t)/0.5);
-      if(alpha<=0)return;
-      const pad=Math.round(Math.min(30*dpr, w*0.03));
-      const bandH=Math.round(Math.min(96*dpr, h*0.16));
-      const bandY=h-bandH-pad;const bandX=pad;const bandW=w-pad*2;
-      ctx.save();ctx.globalAlpha=alpha;
-      const grad=ctx.createLinearGradient(bandX,bandY,bandX,bandY+bandH);
-      grad.addColorStop(0,'rgba(10,10,18,0.0)');
-      grad.addColorStop(0.35,'rgba(10,10,18,0.85)');
-      grad.addColorStop(1,'rgba(10,10,18,0.95)');
-      ctx.fillStyle=grad;ctx.fillRect(bandX,bandY,bandW,bandH);
-      ctx.fillStyle='#e5c15a';ctx.fillRect(bandX,bandY+Math.round(bandH*0.15),Math.round(5*dpr),bandH-Math.round(bandH*0.3));
-      const speakerName=(scene.dialogue&&scene.dialogue.speaker)||(scene.character&&scene.character.name)||'';
-      const nameSize=Math.round(Math.min(15*dpr, h*0.022));
-      const textSize=Math.round(Math.min(22*dpr, h*0.032));
-      if(speakerName){ctx.fillStyle='#e5c15a';ctx.font='700 '+nameSize+'px -apple-system, Helvetica, Arial';ctx.textBaseline='top';ctx.fillText(speakerName.toUpperCase(),bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.18));}
-      const overlayText=scene.text_overlay_fr||(scene.dialogue&&scene.dialogue.line_fr)||'';
-      if(overlayText){
-        ctx.fillStyle='#f5f0e1';ctx.font='500 '+textSize+'px -apple-system, Helvetica, Arial';ctx.textBaseline='top';
-        let txt=overlayText;const maxW=bandW-Math.round(bandH*0.4);
-        while(ctx.measureText(txt).width>maxW&&txt.length>4){txt=txt.slice(0,-4)+'…';}
-        ctx.fillText(txt,bandX+Math.round(bandH*0.22),bandY+Math.round(bandH*0.5));
-      }
-      ctx.restore();
-    };
-    const draw=()=>{
-      ctx.fillStyle='#000';ctx.fillRect(0,0,canvas.width,canvas.height);
-      const vw=video.videoWidth||1280;const vh=video.videoHeight||720;
-      const ar=vw/vh;const car=canvas.width/canvas.height;
-      let dw,dh,dx,dy;
-      if(ar>car){dw=canvas.width;dh=canvas.width/ar;dx=0;dy=(canvas.height-dh)/2;}
-      else{dh=canvas.height;dw=canvas.height*ar;dx=(canvas.width-dw)/2;dy=0;}
-      try{ctx.drawImage(video,dx,dy,dw,dh);}catch(e){}
-      drawOverlay(canvas.width,canvas.height);
-    };
-    const loop=()=>{
-      if(!state.isPlayingFilm){clearTimeout(ttsGuard);finish();return;}
-      if(video.paused||video.ended){clearTimeout(ttsGuard);finish();return;}
-      draw();state.playRAF=requestAnimationFrame(loop);
-    };
-    video.onloadedmetadata=()=>{clearTimeout(ttsGuard);startTTS();video.play().then(()=>{loop();}).catch(()=>{startTTS();finish();});};
-    video.oncanplay=()=>{startTTS();};
-    video.onended=()=>{clearTimeout(ttsGuard);finish();};
-    video.onerror=()=>{startTTS();clearTimeout(ttsGuard);finish();};
-    video.load();
-  });
-}
+function playOneScene(vo,scene,ctx,cv,dpr){return new Promise((res)=>{const vid=document.createElement('video');vid.src=vo.url;vid.playsInline=true;vid.setAttribute('playsinline','');vid.setAttribute('webkit-playsinline','');vid.muted=true;vid.crossOrigin='anonymous';let tF=false,fin=false;const fin_=()=>{if(fin)return;fin=true;res()};const startTTS=()=>{if(tF)return;tF=true;const l=getSceneSpeechLine(scene);if(l)speakFR(l)};const tg=setTimeout(()=>{startTTS()},2000);const drawOv=(w,h)=>{const t=vid.currentTime||0;const du=vid.duration||6;let a=1;if(t<0.4)a=t/0.4;else if(du-t<0.5)a=Math.max(0,(du-t)/0.5);if(a<=0)return;const pad=Math.round(Math.min(30*dpr,w*0.03));const bH=Math.round(Math.min(96*dpr,h*0.16));const bY=h-bH-pad,bX=pad,bW=w-pad*2;ctx.save();ctx.globalAlpha=a;const g=ctx.createLinearGradient(bX,bY,bX,bY+bH);g.addColorStop(0,'rgba(10,10,18,0)');g.addColorStop(0.35,'rgba(10,10,18,0.85)');g.addColorStop(1,'rgba(10,10,18,0.95)');ctx.fillStyle=g;ctx.fillRect(bX,bY,bW,bH);ctx.fillStyle='#e5c15a';ctx.fillRect(bX,bY+Math.round(bH*0.15),Math.round(5*dpr),bH-Math.round(bH*0.3));const sn=(scene.dialogue&&scene.dialogue.speaker)||(scene.character&&scene.character.name)||'';const nS=Math.round(Math.min(15*dpr,h*0.022));const tS=Math.round(Math.min(22*dpr,h*0.032));if(sn){ctx.fillStyle='#e5c15a';ctx.font='700 '+nS+'px -apple-system, Helvetica, Arial';ctx.textBaseline='top';ctx.fillText(sn.toUpperCase(),bX+Math.round(bH*0.22),bY+Math.round(bH*0.18))}const ot=scene.text_overlay_fr||(scene.dialogue&&scene.dialogue.line_fr)||'';if(ot){ctx.fillStyle='#f5f0e1';ctx.font='500 '+tS+'px -apple-system, Helvetica, Arial';ctx.textBaseline='top';let txt=ot;const mw=bW-Math.round(bH*0.4);while(ctx.measureText(txt).width>mw&&txt.length>4){txt=txt.slice(0,-4)+'…'}ctx.fillText(txt,bX+Math.round(bH*0.22),bY+Math.round(bH*0.5))}ctx.restore()};const draw=()=>{ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height);const vw=vid.videoWidth||1280,vh=vid.videoHeight||720;const ar=vw/vh,car=cv.width/cv.height;let dw,dh,dx,dy;if(ar>car){dw=cv.width;dh=cv.width/ar;dx=0;dy=(cv.height-dh)/2}else{dh=cv.height;dw=cv.height*ar;dx=(cv.width-dw)/2;dy=0}try{ctx.drawImage(vid,dx,dy,dw,dh)}catch(e){}drawOv(cv.width,cv.height)};const loop=()=>{if(!state.isPlayingFilm){clearTimeout(tg);fin_();return}if(vid.paused||vid.ended){clearTimeout(tg);fin_();return}draw();state.playRAF=requestAnimationFrame(loop)};vid.onloadedmetadata=()=>{clearTimeout(tg);startTTS();vid.play().then(()=>{loop()}).catch(()=>{startTTS();fin_()})};vid.oncanplay=()=>{startTTS()};vid.onended=()=>{clearTimeout(tg);fin_()};vid.onerror=()=>{startTTS();clearTimeout(tg);fin_()};vid.load()})}
 
-function stopFilmPlayback(){
-  state.isPlayingFilm=false;
-  if(state.playRAF)cancelAnimationFrame(state.playRAF);
-  state.playRAF=null;stopTTS();
-  const overlay=document.getElementById('player-overlay');
-  if(overlay)overlay.classList.remove('visible');
-  updateButtons();
-}
+function stopFilmPlayback(){state.isPlayingFilm=false;if(state.playRAF)cancelAnimationFrame(state.playRAF);state.playRAF=null;stopTTS();const o=document.getElementById('player-overlay');if(o)o.classList.remove('visible');updateButtons()}
 
-function autoSelectNews(){
-  const count=parseInt(document.getElementById('reportage-count').value,10)||5;
-  state.selectedNews=state.newsItems.slice(0,count);
-  renderNews();updateButtons();
-  journalLog('Auto-sélection : '+state.selectedNews.length+' sujets retenus.','news');
-}
+function autoSelectNews(){const c=parseInt(document.getElementById('reportage-count').value,10)||5;state.selectedNews=state.newsItems.slice(0,c);renderNews();updateButtons();journalLog('Auto-sélection : '+state.selectedNews.length+' sujets.','news')}
 
+// ── INIT ──
 (function init(){
   document.getElementById('api-save-btn').addEventListener('click',saveKeysFromUI);
-  document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI();}});
-  document.querySelectorAll('[data-toggle]').forEach(h=>{
-    h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open');});
-  });
-  document.getElementById('subject-select').addEventListener('change',e=>{
-    const wrap=document.getElementById('custom-subject-wrap');
-    if(wrap)wrap.style.display=(e.target.value==='CUSTOM')?'block':'none';
-  });
+  document.getElementById('api-keys-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();saveKeysFromUI()}});
+  document.querySelectorAll('[data-toggle]').forEach(h=>{h.addEventListener('click',()=>{const el=document.getElementById(h.dataset.toggle);if(el)el.classList.toggle('open')})});
+  document.getElementById('subject-select').addEventListener('change',e=>{const w=document.getElementById('custom-subject-wrap');if(w)w.style.display=(e.target.value==='CUSTOM')?'block':'none'});
   document.getElementById('load-news-btn').addEventListener('click',async()=>{
-    const subject=document.getElementById('subject-select').value;
-    const custom=(document.getElementById('custom-subject-input')||{}).value||'';
-    const freeNews=(document.getElementById('custom-news-input')||{}).value||'';
-    if(freeNews.trim().length>0){
-      const lines=freeNews.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
-      const items=lines.map((title,i)=>({title,link:'#',pubDate:new Date().toISOString(),source:'Annonce libre',rank:i+1}));
+    const subj=document.getElementById('subject-select').value;
+    const cust=(document.getElementById('custom-subject-input')||{}).value||'';
+    const free=(document.getElementById('custom-news-input')||{}).value||'';
+    if(free.trim().length>0){
+      const lines=free.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+      const items=lines.map((t,i)=>({title:t,link:'#',pubDate:new Date().toISOString(),source:'Annonce libre',rank:i+1}));
       state.newsItems=items;state.selectedNews=items.slice();
       renderNews();revealSection('section-news');
-      journalLog(items.length+' annonce(s) chargée(s) en mode libre.','news');
-      updateButtons();
-      return;
+      journalLog(items.length+' annonce(s) chargée(s).','news');
+      updateButtons();return;
     }
-    setStatus('Chargement des actualités…');
-    journalLog('Je récupère les actualités…','news');
-    try{
-      const res=await fetchNewsWithFallback(subject, custom);
-      state.newsItems=res.items;state.selectedNews=[];
-      renderNews();revealSection('section-news');
-      journalLog(res.items.length+' sujets trouvés (via '+res.method+').','news');
-      setStatus(null);
-    }catch(e){
-      journalLog('Erreur chargement : '+e.message,'error');setStatus(null);
-    }
+    setStatus('Chargement des actualités…');journalLog('Je récupère les actualités…','news');
+    try{const r=await fetchNewsWithFallback(subj,cust);state.newsItems=r.items;state.selectedNews=[];renderNews();revealSection('section-news');journalLog(r.items.length+' sujets (via '+r.method+').','news');setStatus(null)}catch(e){journalLog('Erreur : '+e.message,'error');setStatus(null)}
   });
   document.getElementById('select-first-btn').addEventListener('click',autoSelectNews);
-  document.getElementById('clear-news-btn').addEventListener('click',()=>{state.selectedNews=[];renderNews();updateButtons();});
+  document.getElementById('clear-news-btn').addEventListener('click',()=>{state.selectedNews=[];renderNews();updateButtons()});
+  document.getElementById('upload-images-btn').addEventListener('click',()=>{document.getElementById('upload-images-input').click()});
+  document.getElementById('upload-images-input').addEventListener('change',async(e)=>{
+    const files=Array.from(e.target.files||[]);
+    if(files.length===0)return;
+    journalLog(files.length+' image(s) en cours d\'import…','image');
+    for(const f of files){
+      try{
+        const url=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)});
+        state.customImages.push({url:url,name:f.name});
+      }catch(err){debugLog('error','UPLOAD',err.message)}
+    }
+    renderCustomImages();updateButtons();
+    revealSection('section-custom-images');
+    journalLog(state.customImages.length+' image(s) importée(s).','success');
+    showToast(state.customImages.length+' image(s) importée(s) ✓','success');
+    e.target.value='';
+  });
+  document.getElementById('clear-custom-images-btn').addEventListener('click',()=>{state.customImages=[];renderCustomImages();updateButtons();journalLog('Images personnalisées effacées.','warn')});
   document.getElementById('generate-btn').addEventListener('click',runJournal);
   document.getElementById('validate-images-btn').addEventListener('click',generateVideosPhase);
-  document.getElementById('stop-btn').addEventListener('click',()=>{
-    state.stopRequested=true;stopTTS();
-    debugLog('warn','STOP','Arrêt demandé');
-    journalLog('Arrêt demandé — je termine proprement…','warn');
-    setStatus('Arrêt en cours…');
-  });
+  document.getElementById('stop-btn').addEventListener('click',()=>{state.stopRequested=true;stopTTS();debugLog('warn','STOP','Arrêt demandé');journalLog('Arrêt demandé…','warn');setStatus('Arrêt en cours…')});
   document.getElementById('play-film-btn').addEventListener('click',playFilm);
   document.getElementById('stop-play-btn').addEventListener('click',stopFilmPlayback);
   document.getElementById('player-overlay').addEventListener('click',stopFilmPlayback);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback();});
-  document.getElementById('voice-toggle').addEventListener('change',e=>{
-    state.voiceEnabled=e.target.checked;
-    if(!state.voiceEnabled)stopTTS();
-  });
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.isPlayingFilm)stopFilmPlayback()});
+  document.getElementById('voice-toggle').addEventListener('change',e=>{state.voiceEnabled=e.target.checked;if(!state.voiceEnabled)stopTTS()});
   document.getElementById('tab-journal').addEventListener('click',()=>switchTab('journal'));
   document.getElementById('tab-tech').addEventListener('click',()=>switchTab('tech'));
-  document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug();});
-  document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug();});
-  document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse();});
-  window.addEventListener('beforeunload',e=>{
-    if(state.isRunning||state.isGeneratingVideos){e.preventDefault();e.returnValue='';}
-  });
+  document.getElementById('debug-clear-btn').addEventListener('click',e=>{e.stopPropagation();clearDebug()});
+  document.getElementById('debug-copy-btn').addEventListener('click',e=>{e.stopPropagation();copyDebug()});
+  document.getElementById('debug-collapse-btn').addEventListener('click',e=>{e.stopPropagation();toggleDebugCollapse()});
+  window.addEventListener('beforeunload',e=>{if(state.isRunning||state.isGeneratingVideos){e.preventDefault();e.returnValue=''}});
   refreshKeyPool();updateApiPanel();updateButtons();initTTS();
-  setInterval(renderKeysStatus, 1000);
-  debugLog('success','INIT','JT Studio prêt');
-  debugLog('info','INIT','Mode annonce libre activé');
+  setInterval(renderKeysStatus,1000);
+  debugLog('success','INIT','JT Studio prêt · 15 styles');
   journalLog('Bienvenue dans JT Studio.','highlight');
-  journalLog('1. Colle tes clés API Agnes → Enregistrer','info');
-  journalLog('2. Google News OU remplis l\'annonce libre','info');
-  journalLog('3. Sélectionne 3 à 10 sujets','info');
-  journalLog('4. Clique sur Générer le JT','info');
-  journalLog('5. Valide les images','info');
-  journalLog('6. Génère les vidéos','info');
-  journalLog('7. Diffuse ton JT','info');
+  journalLog('1. Colle tes clés API → Enregistrer','info');
+  journalLog('2. Choisis un style d\'animation 🎨','style');
+  journalLog('3. Google News OU annonce libre OU uploade des images','info');
+  journalLog('4. Génère le JT','info');
 })();
 </script>
 </body>
